@@ -1,5 +1,4 @@
 #include "Game.h"
-
 #include <time.h>
 
 namespace lithtris
@@ -15,50 +14,52 @@ Game::~Game()
 }
 
 
-void Game::play()
+void Game::run()
 {
-    static int force_down_counter = 0;
-    static int slide_counter = 0;
-
-    while (!p_stateStack.empty()) {
-        if (p_stateStack.top().statePointer)
-            p_stateStack.top().statePointer();
+    while (!p_stateStack.empty())
+    {
+        const state_t &top = p_stateStack.top();
+        if (top.statePointer)
+            top.statePointer();
     }
 }
 
 
-/* protected */
+
 void Game::init()
 {
     SDL_Init(SDL_INIT_VIDEO | SDL_INIT_TIMER);
     p_window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 0, SDL_ANYFORMAT);
     SDL_WM_SetCaption(WINDOW_CAPTION, 0);
     p_timer = SDL_GetTicks();
-    p_bitmap = SDL_LoadBMP("data/blocks.bmp");
+    p_bitmap = SDL_LoadBMP("data/lithtris.bmp");
 
-    state_t state;
-    state.statePointer = &Game::exit;
-    p_stateStack.push(state);
-
-    state.statePointer = &Game::menu;
-    p_stateStack.push(state);
-    TTF_Init();
-
-
+    
     srand(time(0));
     BlockType type = rand() % NumBlockTypes;
     p_focusBlock = new Block(BLOCK_START_X, BLOCK_START_Y, p_bitmap, type);
-    fillNextBlocks(3);
+    type = rand() % NumBlockTypes;
+    p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, type);
+    p_holdBlock = 0;
+
+    p_level = 1;
+    p_score = 0;
+    p_blockSpeed = INITIAL_SPEED;
+    
+    state_t state;
+    state.statePointer = &Game::exit_state;
+    p_stateStack.push(state);
+    state.statePointer = &Game::menu_state;
+    p_stateStack.push(state);
+    TTF_Init();
 }
 void Game::shutdown()
 {
-    int i;
-    delete(p_focusBlock);
-    for (i=0; i < p_nextBlocks.size(); i++) {
-        delete(p_nextBlocks[i]);
-    }
-    p_nextBlocks.erase(p_nextBlocks.begin(),p_nextBlocks.end());
-    for (i=0; i < p_oldSquares; i++) {
+    if (p_focusBlock) delete(p_focusBlock);
+    if (p_nextBlock) delete(p_nextBlock);
+    if (p_holdBlock) delete(p_holdBlock);
+
+    for (int i=0; i < p_oldSquares.size(); i++) {
         delete(p_oldSquares[i]);
     }
     p_oldSquares.erase(p_oldSquares.begin(),p_oldSquares.end());
@@ -69,21 +70,27 @@ void Game::shutdown()
     SDL_Quit();
 }
 
-Game::fillNextBlocks(int num_next_blocks)
+void Game::reset(statePointer)
 {
-    while (p_nextBlocks.size() < p_num_next_blocks)
+    for (int i=0; i < p_oldSquares.size(); i++)
     {
-        BlockType type = rand() % NumBlockTypes;
-        Block *t = new Block(NEXT_BLOCK_RECT_X, NEXT_BLOCK_RECT_Y, p_bitmap, type);
-        p_nextBlocks.push_back(t);
+        delete p_oldSquares[i];
     }
-}
+    p_oldSquares.clear();
+    p_score = 0;
+    p_level = 1;
+    while (!p_stateStack.empty()) p_stateStack.pop();
 
+    state_t tmp;
+    tmp.statePointer = statePointer;
+    p_stateStack.push(tmp);
+}
 
 void Game::drawBackground()
 {
-    SDL_Rect src = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
-    SDL_BlitSurface(p_bitmap, &src, p_window, &src);
+    SDL_Rect src = {LEVEL_BACK_X,LEVEL_BACK_Y,WINDOW_WIDTH,WINDOW_HEIGHT};
+    SDL_Rect dest = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
+    SDL_BlitSurface(p_bitmap, &src, p_window, &dest);
 }
 
 void Game::clearScreen()
@@ -103,123 +110,53 @@ void Game::displayText(std::string text, int x, int y, int size, int fR, int fG,
     SDL_FreeSurface(tmp);
 }
 
-void Game::handleMenuInput()
-{
-    if ( SDL_PollEvent(&p_event) )
-    {
-        if (p_event.type == SDL_QUIT) {
-            while (!p_stateStack.empty())
-                p_stateStack.pop();
-            return;
-        }
 
-        if (p_event.type == SDL_KEYDOWN) {
-            if (p_event.key.keysym.sym == SDLK_ESCAPE) {
-                p_stateStack.pop();
-                return;
-            }
-            if (p_event.key.keysym.sym == SDLK_q) {
-                p_stateStack.pop();
-                return;
-            }
-            if (p_event.key.keysym.sym == SDLK_s) {
-                state_t tmp;
-                tmp.statePointer = this::*play;
-                p_stateStack.push(tmp);
-                return;
-            }
-        }
-    }
-}
-void Game::handleExitInput()
+void Game::handleBottomCollision()
 {
-    if ( SDL_PollEvent(&p_event)) {
-        if (p_event.type == SDL_QUIT)
-        {
-            while (!p_stateStack.empty()) p_stateStack.pop();
-            return;
-        }
+    int num_lines = checkCompletedLines();
 
-        if (p_event.type == SDL_KEYDOWN) {
-            if (p_event.key.keysym.sym == SDLK_ESCAPE)
-            {
-                p_stateStack.pop();
-                return;
-            }
-            if (p_event.key.keysym.sym == SDLK_y)
-            {
-                p_stateStack.pop();
-                return;
-            }
-            if (p_event.key.keysym.sym == SDLK_n)
-            {
-                state_t tmp;
-                tmp.statePointer = this::*play;
-                p_stateStack.push(tmp);
-                return;
-            }
+    if (num_lines > 0) {
+        int to_next_level = p_score % LINES_PER_LEVEL;
+        if (num_lines >= p_score % LINES_PER_LEVEL) { // increase level
+            p_level++;
+            checkWin();
+            p_focusBlockSpeed -= SPEED_CHANGE;
         }
+        p_score += num_lines;
     }
 
+    checkLoss();
+    changeFocusBlock();
 }
 
-void Game::handlePlayInput()
+void Game::changeFocusBlock()
 {
-    if ( SDL_PollEvent(&p_event)) {
-        if (p_event.type == SDL_QUIT)
-        {
-            while (!p_stateStack.empty()) p_stateStack.pop();
-            return;
-        }
+    Square **squares = p_focusBlock->getSquares();
 
-        if (p_event.type == SDL_KEYDOWN) {
-            if (p_event.key.keysym.sym == SDLK_ESCAPE)
-            {
-                p_stateStack.pop();
-                return;
-            }
-        }
+    for (int i=0; i <4; i++)
+        p_oldSquares.push_back(squares[i]);
+
+    delete p_focusBlock;
+    p_focusBlock = p_nextBlock;
+    p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_bitmap);
+    p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, (BlockType)(rand()%NumBlockTypes));
+}
+
+void Game::holdFocusBlock()
+{
+    Block *temp = p_holdBlock;
+
+    p_holdBlock = pFocusBlock;
+    if (temp) {
+        p_focusBlock = temp;
+    }
+    else {
+        p_focusBlock = p_nextBlock;
+        p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_bitmap);
+        p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, (BlockType)(rand()%NumBlockTypes));
     }
 }
 
-
-/* states */
-void Game::menu()
-{
-    if ((SDL_GetTicks() - p_timer) >= FRAME_RATE)
-    {
-        handleMenuInput();
-        clearScreen();
-        displayText("(S)tart game", 120, 120, 12, 255, 255, 255, 0, 0, 0);
-        displayText("(Q)uit game", 120, 150, 12, 255, 255, 255, 0, 0, 0);
-        SDL_UpdateRect(p_window, 0, 0, 0, 0);
-        p_timer = SDL_GetTicks();
-    }
-}
-
-void Game::exit()
-{
-    if ((SDL_GetTicks() - p_timer) >= FRAME_RATE)
-    {
-        handleExitInput();
-        clearScreen();
-        displayText("Quit Game? (y or n)", 100, 150, 255, 255,255, 0,0,0);
-        SDL_UpdateRect(p_window,0,0,0,0);
-        p_timer = SDL_GetTicks();
-    }
-}
-
-void Game::play()
-{
-    if ((SDL_GetTicks() - p_timer) >= FRAME_RATE)
-    {
-        handlePlayInput();
-        clearScreen();
-        drawBackground();
-        SDL_UpdateRect(p_window,0,0,0,0);
-        p_timer = SDL_GetTicks();
-    }
-}
 
 }
 
