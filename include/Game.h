@@ -4,11 +4,18 @@
 #include "defines.h"
 #include "enums.h"
 #include "SDL.h"
-#include "SDLmain.h"
-#include "SDL_TTF.h"
+#include "SDL_main.h"
+#include "SDL_ttf.h"
+#include "Square.h"
+#include "Block.h"
+
+#include <string>
+#include <vector>
+#include <stack>
 
 namespace lithtris
 {
+
 
 
 class Game
@@ -21,10 +28,6 @@ public:
 
 protected:
     typedef void (Game::*StateFunction)();
-    typedef state_dat {
-        StateFunction statePointer;
-    } state_t;
-
 
     /* game_collisions.cpp*/
     bool checkCollisions(Square *square, Direction dir);
@@ -45,6 +48,7 @@ protected:
     void addBlockToPile(Block *block);
     void nextFocusBlock();
     void holdFocusBlock();
+    void shiftNextBlocks();
     Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
     SDL_Rect getRowCol(int x, int y);
 
@@ -52,7 +56,7 @@ protected:
     void drawBackground();
     void drawScore();
     void clearScreen();
-    void displayText(std::string text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB);
+    void displayText(const char *text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB, const char *font_name="arial.ttf");
 
     /* game_inputs.cpp */
     void handleMenuInput();
@@ -92,7 +96,7 @@ private:
     SDL_Surface *p_window;
     SDL_Event p_event;
     int p_timer;
-    std::stack<state_t> p_stateStack;
+    std::stack<StateFunction> p_stateStack;
 };
 
 }

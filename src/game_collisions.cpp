@@ -23,13 +23,13 @@ bool Game::checkCollisions(Square *square, Direction dir)
     switch (dir) 
     {
         case Down:
-            if ( y + distance > PLAY_AREA_Y+PLAY_AREA_H ) return true;
+            if ( y + distance > PLAYAREA_Y+PLAYAREA_H ) return true;
             break;
         case Left:
-            if ( x - distance < PLAY_AREA_X ) return true;
+            if ( x - distance < PLAYAREA_X ) return true;
             break;
         case Right:
-            if ( x + distance > PLAY_AREA_X+PLAY_AREA_W ) return true;
+            if ( x + distance > PLAYAREA_X+PLAYAREA_W ) return true;
             break;
     }
 
@@ -50,7 +50,7 @@ bool Game::checkCollisions(Square *square, Direction dir)
 }
 bool Game::checkCollisions(Block *block, Direction dir)
 {
-    Square sqs = block->getSquares();
+    Square **sqs = block->squares();
     for (int i=0; i < 4; i ++) {
         if (checkCollisions(sqs[i], dir))
             return true;
@@ -62,7 +62,7 @@ bool Game::checkRotationCollisions(Block *block, Direction dir)
 {
     Block *rot = block->getRotatedCopy(dir);
 
-    bool ret = checkCollisions(rot, Invalid);
+    bool ret = checkCollisions(rot, InvalidDirection);
     delete rot;
 
     return ret;
@@ -83,14 +83,14 @@ int Game::checkCompletedLines()
         num_lines++;
 
         //erase the row
-        for (c = 0; c < SQUARE_PER_ROW; c++) {
+        for (c = 0; c < SQUARES_PER_ROW; c++) {
             delete p_pile[i][c];
             p_pile[i][c] = 0;
         }
 
         //move everything above it down one row
         for (row=i+1; row < MAX_ROWS; row++) {
-            for (c=0; c < SQUARE_PER_ROW; c++) {
+            for (c=0; c < SQUARES_PER_ROW; c++) {
                 if (p_pile[row][c]) {
                     p_pile[row-1][c] = p_pile[row][c];
                     p_pile[row][c] = 0;
@@ -99,6 +99,7 @@ int Game::checkCompletedLines()
             }
         }
 continue_outer:
+        ;
     }
 
     return num_lines;
@@ -106,15 +107,15 @@ continue_outer:
 
 bool Game::checkWin()
 {
-    if (p_level >= NUM_LEVELS) {
-        reset(won_state);
+    if (p_level >= MAX_LEVEL) {
+        reset(&Game::won_state);
     }
 }
 
 bool Game::checkLoss()
 {
-    if (checkEntityCollisions(p_focusBlock, Down)) {
-        reset(lost_state); 
+    if (checkCollisions(p_focusBlock, Down)) {
+        reset(&Game::lost_state); 
     }
 }
 

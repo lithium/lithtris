@@ -3,6 +3,8 @@
 
 #include "enums.h"
 #include "defines.h"
+#include "SDL.h"
+#include "SDL_main.h"
 
 namespace lithtris 
 {
@@ -18,7 +20,7 @@ public:
     void move(Direction dir);
 
     int centerX() { return p_centerX; }
-    int centerY() { return p_cetnerY; }
+    int centerY() { return p_centerY; }
     void setCenterX(int x) { p_centerX = x; }
     void setCenterY(int y) { p_centerY = y; }
 private:

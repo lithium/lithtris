@@ -3,7 +3,7 @@
 
 int main(int ac, char **av)
 {
-    Game game;
+    lithtris::Game game;
 
     game.run();
 

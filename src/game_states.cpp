@@ -47,7 +47,7 @@ void Game::exit_state()
     {
         handleExitInput();
         clearScreen();
-        displayText("Quit Game? (y or n)", 100, 150, 255, 255,255, 0,0,0);
+        displayText("Quit Game? (y or n)", 100, 150, 12, 255,255,255, 0,0,0);
         SDL_UpdateRect(p_window,0,0,0,0);
         p_timer = SDL_GetTicks();
     }
@@ -61,7 +61,7 @@ void Game::play_state()
     if ((SDL_GetTicks() - p_timer) >= FRAME_RATE)
     {
         handlePlayInput();
-        if (++force_down_counter >= p_focusBlockSpeed)
+        if (++force_down_counter >= p_blockSpeed)
         {
             if (!checkCollisions(p_focusBlock,Down)) {
                 p_focusBlock->move(Down);
@@ -93,7 +93,8 @@ void Game::play_state()
 
         for (int r=0; r < MAX_ROWS; r++) {
             for (int c=0; c < SQUARES_PER_ROW; c++) {
-                p_pile[r][c]->draw(p_window);
+                if (p_pile[r][c]) 
+                    p_pile[r][c]->draw(p_window);
             }
         }
 
@@ -106,9 +107,7 @@ void Game::play_state()
 
 void Game::pushState(StateFunction state_func)
 {
-    state_t tmp;
-    tmp.statePointer = state_func;
-    p_stateStack.push(tmp);
+    p_stateStack.push(state_func);
 }
 
 void Game::clearStates()

@@ -1,6 +1,8 @@
 #ifndef DEFINES_H
 #define DEFINES_H
 
+#define WINDOW_CAPTION "lithtris"
+
 
 #define KEY_ROTATE_LEFT     SDLK_z
 #define KEY_ROTATE_RIGHT    SDLK_x
@@ -19,7 +21,7 @@
 #define LINES_PER_LEVEL 10
 
 
-#define INITIAL_SPEED   70
+#define INITIAL_SPEED   50
 #define SPEED_CHANGE    3 
 
 #define SLIDE_TIME      15

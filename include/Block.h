@@ -1,6 +1,11 @@
 #ifndef BLOCK_H
 #define BLOCK_H
 
+#include "SDL.h"
+#include "enums.h"
+#include "defines.h"
+#include "Square.h"
+
 namespace lithtris
 {
 
@@ -16,9 +21,8 @@ public:
     void rotate(Direction dir);
     
     Square **squares() { return p_squares; }
-protected:
+    Block *getRotatedCopy(Direction dir);
     void setupSquares(int x, int y, SDL_Surface *bitmap);
-    int *getRotatedSquares();
 private:
     int p_centerX;
     int p_centerY;

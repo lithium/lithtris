@@ -71,7 +71,7 @@ void Block::rotate(Direction dir)
 
 
 /* protected */
-Block::setupSquares(int x, int y, SDL_Surface *bitmap)
+void Block::setupSquares(int x, int y, SDL_Surface *bitmap)
 {
     p_centerX = x;
     p_centerY = y;
@@ -128,7 +128,7 @@ Block::setupSquares(int x, int y, SDL_Surface *bitmap)
             p_squares[0] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
             p_squares[1] = new Square(x + SQUARE_MEDIAN*3, y - SQUARE_MEDIAN, bitmap, p_type);
             p_squares[2] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squaers[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
             break;
         case ZBlock:
             // [0][1]

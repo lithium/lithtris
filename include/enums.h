@@ -6,7 +6,7 @@ namespace lithtris
 
 enum BlockType
 {
-    Invalid=0,
+    InvalidType=0,
     SquareBlock,
     TBlock,
     LineBlock,
@@ -19,7 +19,7 @@ enum BlockType
 
 enum Direction
 {
-    Invalid=0,
+    InvalidDirection=0,
     Left,
     Right,
     Down
