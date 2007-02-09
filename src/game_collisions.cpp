@@ -103,12 +103,12 @@ int Game::checkCompletedLines()
         }
 
         //move everything above it down one row
-        for (row=i+1; row < MAX_ROWS; row++) {
+        for (row=i-1; row >= 0; row--) {
             for (c=0; c < SQUARES_PER_ROW; c++) {
                 if (p_pile[row][c]) {
-                    p_pile[row-1][c] = p_pile[row][c];
-                    p_pile[row][c] = 0;
                     p_pile[row][c]->move(Down);
+                    p_pile[row+1][c] = p_pile[row][c];
+                    p_pile[row][c] = 0;
                 }
             }
         }

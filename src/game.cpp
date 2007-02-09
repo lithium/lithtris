@@ -160,6 +160,9 @@ void Game::displayText(const char *text, int x, int y, int size, int fR, int fG,
 
 void Game::handleBottomCollision()
 {
+    addBlockToPile(p_focusBlock);
+    delete p_focusBlock;
+
     int num_lines = checkCompletedLines();
 
     if (num_lines > 0) {
@@ -172,7 +175,7 @@ void Game::handleBottomCollision()
         }
     }
 
-    checkLoss();
+    //checkLoss();
     nextFocusBlock();
 }
 void Game::addBlockToPile(Block *block)
@@ -182,15 +185,11 @@ void Game::addBlockToPile(Block *block)
     for (i=0; i < 4; i++) {
         SDL_Rect r = getRowCol(squares[i]->centerX(), squares[i]->centerY());
         p_pile[r.x][r.y] = squares[i];
-        printf("(%d,%d) added to pile\n",r.x,r.y);
     }
 }
 
 void Game::nextFocusBlock()
 {
-    addBlockToPile(p_focusBlock);
-    delete p_focusBlock;
-
     shiftNextBlocks();
 }
 
@@ -211,6 +210,7 @@ void Game::holdFocusBlock()
     Block *temp = p_holdBlock;
 
     p_holdBlock = p_focusBlock;
+    p_holdBlock->setupSquares(HOLDAREA_X+HOLDAREA_W/2-SQUARE_MEDIAN, HOLDAREA_Y+HOLDAREA_H/2, p_blocks_bitmap);
     if (temp) {
         p_focusBlock = temp;
         p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_blocks_bitmap);

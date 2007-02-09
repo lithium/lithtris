@@ -89,6 +89,10 @@ void Game::handlePlayInput()
                 // XXX: TODO
             }
             else
+            if (p_event.key.keysym.sym == KEY_HOLD) {
+                holdFocusBlock();
+            }
+            else
             if (p_event.key.keysym.sym == KEY_MOVE_LEFT) 
                 left_pressed = true;
             else
