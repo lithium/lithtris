@@ -30,8 +30,12 @@ protected:
     typedef void (Game::*StateFunction)();
 
     /* game_collisions.cpp*/
-    bool checkCollisions(Square *square, Direction dir);
-    bool checkCollisions(Block *block, Direction dir);
+    bool checkCollisions(Square *square, Direction dir) { return checkWallCollisions(square,dir) || checkPileCollisions(square,dir); }
+    bool checkCollisions(Block *block, Direction dir) { return checkWallCollisions(block,dir) || checkPileCollisions(block,dir); }
+    bool checkWallCollisions(Square *square, Direction dir);
+    bool checkPileCollisions(Square *square, Direction dir);
+    bool checkPileCollisions(Block *block, Direction dir);
+    bool checkWallCollisions(Block *block, Direction dir);
     bool checkRotationCollisions(Block *block, Direction dir); 
 
     bool checkWin();

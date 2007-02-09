@@ -6,7 +6,6 @@ namespace lithtris
 
 enum BlockType
 {
-    InvalidType=0,
     SquareBlock,
     TBlock,
     LineBlock,

@@ -32,7 +32,7 @@
 #define SQUARE_MEDIAN    7  //distance from center of square to sides
 
 #define BLOCK_START_X 180
-#define BLOCK_START_Y  20
+#define BLOCK_START_Y  19
 
 // offsets,widths for skin images
 #define WINDOW_WIDTH  500

@@ -13,13 +13,11 @@ SDL_Rect Game::getRowCol(int x, int y)
     return ret;
 }
 
-bool Game::checkCollisions(Square *square, Direction dir)
+bool Game::checkWallCollisions(Square *square, Direction dir)
 {
     int distance = SQUARE_MEDIAN*2;
     int x = square->centerX();
     int y = square->centerY();
-
-    /* check if it would collide with a wall */
     switch (dir) 
     {
         case Down:
@@ -32,6 +30,14 @@ bool Game::checkCollisions(Square *square, Direction dir)
             if ( x + distance > PLAYAREA_X+PLAYAREA_W ) return true;
             break;
     }
+    return false;
+}
+
+bool Game::checkPileCollisions(Square *square, Direction dir)
+{
+    int distance = SQUARE_MEDIAN*2;
+    int x = square->centerX();
+    int y = square->centerY();
 
     /* calc where square would end up after move */
     switch (dir) 
@@ -41,18 +47,26 @@ bool Game::checkCollisions(Square *square, Direction dir)
         case Right: x += distance; break;
     }
 
-
     /* determine row,col check if a block is in pile there */
     SDL_Rect r = getRowCol(x,y);
     if (p_pile[r.x][r.y]) return true;
 
     return false;
 }
-bool Game::checkCollisions(Block *block, Direction dir)
+bool Game::checkWallCollisions(Block *block, Direction dir)
 {
     Square **sqs = block->squares();
     for (int i=0; i < 4; i ++) {
-        if (checkCollisions(sqs[i], dir))
+        if (checkWallCollisions(sqs[i], dir))
+            return true;
+    }
+    return false;
+}
+bool Game::checkPileCollisions(Block *block, Direction dir)
+{
+    Square **sqs = block->squares();
+    for (int i=0; i < 4; i ++) {
+        if (checkPileCollisions(sqs[i], dir))
             return true;
     }
     return false;
@@ -114,9 +128,11 @@ bool Game::checkWin()
 
 bool Game::checkLoss()
 {
-    if (checkCollisions(p_focusBlock, Down)) {
+    /*
+    if (checkPileCollisions(p_focusBlock, Down)) {
         reset(&Game::lost_state); 
     }
+    */
 }
 
 

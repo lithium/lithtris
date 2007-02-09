@@ -175,7 +175,6 @@ void Game::handleBottomCollision()
     checkLoss();
     nextFocusBlock();
 }
-
 void Game::addBlockToPile(Block *block)
 {
     int i;
@@ -183,6 +182,7 @@ void Game::addBlockToPile(Block *block)
     for (i=0; i < 4; i++) {
         SDL_Rect r = getRowCol(squares[i]->centerX(), squares[i]->centerY());
         p_pile[r.x][r.y] = squares[i];
+        printf("(%d,%d) added to pile\n",r.x,r.y);
     }
 }
 
