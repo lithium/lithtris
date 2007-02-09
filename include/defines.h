@@ -2,6 +2,15 @@
 #define DEFINES_H
 
 
+#define KEY_ROTATE_LEFT     SDLK_z
+#define KEY_ROTATE_RIGHT    SDLK_x
+#define KEY_MOVE_LEFT       SDLK_LEFT
+#define KEY_MOVE_RIGHT      SDLK_RIGHT
+#define KEY_SOFT_DROP       SDLK_DOWN
+#define KEY_HARD_DROP       SDLK_UP
+#define KEY_HOLD            SDLK_SPACE
+
+
 #define FRAMES_PER_SECOND 30
 #define FRAME_RATE        1000/FRAMES_PER_SECOND
 
@@ -20,6 +29,8 @@
 #define SQUARES_PER_ROW 10
 #define SQUARE_MEDIAN    7  //distance from center of square to sides
 
+#define BLOCK_START_X 180
+#define BLOCK_START_Y  20
 
 // offsets,widths for skin images
 #define WINDOW_WIDTH  500

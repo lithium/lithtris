@@ -20,12 +20,17 @@ public:
     void run();
 
 protected:
+    typedef void (Game::*StateFunction)();
+    typedef state_dat {
+        StateFunction statePointer;
+    } state_t;
+
+
     /* game_collisions.cpp*/
-    bool checkEntityCollisions(Square *square, Direction dir);
-    bool checkWallCollisions(Square *square, Direction dir);
-    bool checkEntityCollisions(Block *block, Direction dir);
-    bool checkWallCollisions(Block *block, Direction dir);
-    bool checkRotationCollisions(Block *block); 
+    bool checkCollisions(Square *square, Direction dir);
+    bool checkCollisions(Block *block, Direction dir);
+    bool checkRotationCollisions(Block *block, Direction dir); 
+
     bool checkWin();
     bool checkLoss();
     int checkCompletedLines();
@@ -33,12 +38,19 @@ protected:
     /* game.cpp */
     void init();
     void shutdown();
-    void reset(statePointer);
+    void reset(StateFunction statePointer=0);
+    void restart();
 
     void handleBottomCollision();
-    void changeFocusBlock();
+    void addBlockToPile(Block *block);
+    void nextFocusBlock();
     void holdFocusBlock();
+    Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
+    SDL_Rect getRowCol(int x, int y);
+
+
     void drawBackground();
+    void drawScore();
     void clearScreen();
     void displayText(std::string text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB);
 
@@ -48,9 +60,10 @@ protected:
     void handleExitInput();
 
     /* game_states.cpp */
-    typedef state_dat {
-        void (*statePointer)();
-    } state_t;
+
+    void pushState(StateFunction state_func);
+    void clearStates();
+
     void menu_state();
     void play_state();
     void exit_state();
@@ -58,16 +71,24 @@ protected:
     void lost_state();
 
 private:
-    Block *p_focusBlock;
-    Block *p_nextBlock;
-    Block *p_holdBlock;
+    typedef struct nextblock_dat {
+        Block *block;
+        SDL_Rect rect;
+    } nextblock_t;
 
-    std::vector<Square*> p_oldSquares;
+    Block *p_focusBlock;
+    Block *p_holdBlock;
+    std::vector<nextblock_t> p_nextBlocks;
+
+    Square *p_pile[MAX_ROWS][SQUARES_PER_ROW];
     int p_level;
-    int p_score; // number of lines cleared
+    int p_lines;
     int p_blockSpeed;
 
-    SDL_Surface *p_bitmap;
+
+    SDL_Surface *p_blocks_bitmap;
+    SDL_Surface *p_skin_bitmap;
+
     SDL_Surface *p_window;
     SDL_Event p_event;
     int p_timer;

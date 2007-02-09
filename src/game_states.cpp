@@ -63,14 +63,13 @@ void Game::play_state()
         handlePlayInput();
         if (++force_down_counter >= p_focusBlockSpeed)
         {
-            if (!checkWallCollisions(p_focusBlock, Down) && !checkEntityCollisions(p_focusBlock, Down)) {
+            if (!checkCollisions(p_focusBlock,Down)) {
                 p_focusBlock->move(Down);
                 force_down_counter = 0;
             }
         }
 
-        if (checkWallCollisions(p_focusBlock, Down) || checkEntityCollsions(p_focusBlock, Down) )
-        {
+        if (checkCollisions(p_focusBlock,Down)) {
             slide_counter--;
         }
         else {
@@ -86,19 +85,36 @@ void Game::play_state()
         drawBackground();
 
         p_focusBlock->draw(p_window);
-        p_nextBlock->draw(p_window);
-
-        for (int i=0; i < p_oldSquares.size(); i++)
+        int i;
+        for (i=0; i < p_nextBlocks.size(); i++)
         {
-            p_oldSquares[i]->draw(p_window);
+            p_nextBlocks[i].block->draw(p_window);
         }
 
-        /* XXX draw level texts */
+        for (int r=0; r < MAX_ROWS; r++) {
+            for (int c=0; c < SQUARES_PER_ROW; c++) {
+                p_pile[r][c]->draw(p_window);
+            }
+        }
 
+        drawScore();
 
         SDL_UpdateRect(p_window,0,0,0,0);
         p_timer = SDL_GetTicks();
     }
+}
+
+void Game::pushState(StateFunction state_func)
+{
+    state_t tmp;
+    tmp.statePointer = state_func;
+    p_stateStack.push(tmp);
+}
+
+void Game::clearStates()
+{
+    while (!p_stateStack.empty()) 
+        p_stateStack.pop();
 }
 
 

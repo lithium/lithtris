@@ -141,8 +141,9 @@ Block::setupSquares(int x, int y, SDL_Surface *bitmap)
     }
 }
 
-int *Block::getRotatedSquares(Direction dir)
+Block *Block::getRotatedCopy(Direction dir)
 {
+    /*
     int *ret = new int[8];
     int x1,y1,x2,y2;
 
@@ -159,6 +160,7 @@ int *Block::getRotatedSquares(Direction dir)
     }
 
     return ret;
+    */
 }
 
 };

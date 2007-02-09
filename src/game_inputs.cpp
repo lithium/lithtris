@@ -7,8 +7,7 @@ void Game::handleMenuInput()
     if ( SDL_PollEvent(&p_event) )
     {
         if (p_event.type == SDL_QUIT) {
-            while (!p_stateStack.empty())
-                p_stateStack.pop();
+            clearStates();
             return;
         }
 
@@ -22,9 +21,7 @@ void Game::handleMenuInput()
                 return;
             }
             if (p_event.key.keysym.sym == SDLK_s) {
-                state_t tmp;
-                tmp.statePointer = this::*play;
-                p_stateStack.push(tmp);
+                pushState(&Game::play_state);
                 return;
             }
         }
@@ -33,9 +30,8 @@ void Game::handleMenuInput()
 void Game::handleExitInput()
 {
     if ( SDL_PollEvent(&p_event)) {
-        if (p_event.type == SDL_QUIT)
-        {
-            while (!p_stateStack.empty()) p_stateStack.pop();
+        if (p_event.type == SDL_QUIT) {
+            clearStates();
             return;
         }
 
@@ -52,9 +48,8 @@ void Game::handleExitInput()
             }
             if (p_event.key.keysym.sym == SDLK_n)
             {
-                state_t tmp;
-                tmp.statePointer = this::*play;
-                p_stateStack.push(tmp);
+                restart();
+                pushState(&Game::play_state);
                 return;
             }
         }
@@ -70,7 +65,7 @@ void Game::handlePlayInput()
 
     if ( SDL_PollEvent(&p_event)) {
         if (p_event.type == SDL_QUIT) {
-            while (!p_stateStack.empty()) p_stateStack.pop();
+            clearStates();
             return;
         }
 
@@ -80,28 +75,38 @@ void Game::handlePlayInput()
                 return;
             }
 
-            if (p_event.key.keysym.sym == SDLK_UP) {
-                if (!checkRotationCollisions(p_focusBlock))
+            if (p_event.key.keysym.sym == KEY_ROTATE_LEFT) {
+                if (!checkRotationCollisions(p_focusBlock, Left))
                     p_focusBlock->rotate(Left);
             }
             else
-            if (p_event.key.keysym.sym == SDLK_LEFT) 
+            if (p_event.key.keysym.sym == KEY_ROTATE_RIGHT) {
+                if (!checkRotationCollisions(p_focusBlock, Right))
+                    p_focusBlock->rotate(Right);
+            }
+            else
+            if (p_event.key.keysym.sym == KEY_HARD_DROP) {
+                // XXX: TODO
+            }
+            else
+            if (p_event.key.keysym.sym == KEY_MOVE_LEFT) 
                 left_pressed = true;
             else
-            if (p_event.key.keysym.sym == SDLK_RIGHT) 
+            if (p_event.key.keysym.sym == KEY_MOVE_RIGHT) 
                 right_pressed = true;
             else
-            if (p_event.key.keysym.sym == SDLK_DOWN) 
+            if (p_event.key.keysym.sym == KEY_SOFT_DROP) 
                 down_pressed = true;
         }
+        else
         if (p_event.type == SDL_KEYUP) {
-            if (p_event.key.keysym.sym == SDLK_LEFT) 
+            if (p_event.key.keysym.sym == KEY_MOVE_LEFT) 
                 left_pressed = false;
             else
-            if (p_event.key.keysym.sym == SDLK_RIGHT) 
+            if (p_event.key.keysym.sym == KEY_MOVE_RIGHT) 
                 right_pressed = false;
             else
-            if (p_event.key.keysym.sym == SDLK_DOWN) 
+            if (p_event.key.keysym.sym == KEY_SOFT_DROP) 
                 down_pressed = false;
         }
     }
@@ -110,9 +115,8 @@ void Game::handlePlayInput()
     else if (left_pressed) dir = Left;
     else if (right_pressed) dir = Right;
 
-    if (!checkWallCollisions(p_focusBlock, dir) && !checkEntityCollisions(p_focusBlock,dir))
+    if (!checkCollisions(p_focusBlock, dir))
         p_focusBlock->move(dir);
-
 }
 
 };

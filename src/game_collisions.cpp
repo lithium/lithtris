@@ -3,23 +3,106 @@
 namespace lithtris
 {
 
-bool Game::checkEntityCollisions(Square *square, Direction dir)
-{}
+SDL_Rect Game::getRowCol(int x, int y)
+{
+    int row_height = SQUARE_MEDIAN*2;
+    int bottom = PLAYAREA_Y+PLAYAREA_H;
+    int top = bottom - (MAX_ROWS * row_height);
+    int left = PLAYAREA_X;
+    SDL_Rect ret = {(y - top) / row_height, (x - left) / row_height, row_height,row_height};
+    return ret;
+}
 
-bool Game::checkWallCollisions(Square *square, Direction dir)
-{}
+bool Game::checkCollisions(Square *square, Direction dir)
+{
+    int distance = SQUARE_MEDIAN*2;
+    int x = square->centerX();
+    int y = square->centerY();
 
-bool Game::checkEntityCollisions(Block *block, Direction dir)
-{}
+    /* check if it would collide with a wall */
+    switch (dir) 
+    {
+        case Down:
+            if ( y + distance > PLAY_AREA_Y+PLAY_AREA_H ) return true;
+            break;
+        case Left:
+            if ( x - distance < PLAY_AREA_X ) return true;
+            break;
+        case Right:
+            if ( x + distance > PLAY_AREA_X+PLAY_AREA_W ) return true;
+            break;
+    }
 
-bool Game::checkWallCollisions(Block *block, Direction dir)
-{}
+    /* calc where square would end up after move */
+    switch (dir) 
+    {
+        case Down: y += distance; break;
+        case Left: x -= distance; break;
+        case Right: x += distance; break;
+    }
 
-bool Game::checkRotationCollisions(Block *block)
-{}
+
+    /* determine row,col check if a block is in pile there */
+    SDL_Rect r = getRowCol(x,y);
+    if (p_pile[r.x][r.y]) return true;
+
+    return false;
+}
+bool Game::checkCollisions(Block *block, Direction dir)
+{
+    Square sqs = block->getSquares();
+    for (int i=0; i < 4; i ++) {
+        if (checkCollisions(sqs[i], dir))
+            return true;
+    }
+    return false;
+}
+
+bool Game::checkRotationCollisions(Block *block, Direction dir)
+{
+    Block *rot = block->getRotatedCopy(dir);
+
+    bool ret = checkCollisions(rot, Invalid);
+    delete rot;
+
+    return ret;
+}
  
 int Game::checkCompletedLines()
-{}
+{
+    int num_lines = 0;
+    int i,c,row;
+
+    for (i = 0; i < MAX_ROWS; i++) {
+        for (c = 0; c < SQUARES_PER_ROW; c++) {
+            if (!p_pile[i][c])  { // found an empty square, goto next row
+                goto continue_outer;
+            }
+        }
+        // we found no empty squares, a complete line!
+        num_lines++;
+
+        //erase the row
+        for (c = 0; c < SQUARE_PER_ROW; c++) {
+            delete p_pile[i][c];
+            p_pile[i][c] = 0;
+        }
+
+        //move everything above it down one row
+        for (row=i+1; row < MAX_ROWS; row++) {
+            for (c=0; c < SQUARE_PER_ROW; c++) {
+                if (p_pile[row][c]) {
+                    p_pile[row-1][c] = p_pile[row][c];
+                    p_pile[row][c] = 0;
+                    p_pile[row][c]->move(Down);
+                }
+            }
+        }
+continue_outer:
+    }
+
+    return num_lines;
+}
 
 bool Game::checkWin()
 {

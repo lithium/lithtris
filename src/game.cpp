@@ -6,6 +6,7 @@ namespace lithtris
 
 Game::Game()
 {
+    memset(p_pile,0, sizeof(p_pile));
     init();
 }
 Game::~Game()
@@ -20,11 +21,49 @@ void Game::run()
     {
         const state_t &top = p_stateStack.top();
         if (top.statePointer)
-            top.statePointer();
+            this.*top.statePointer();
     }
 }
 
+Block *Game::getRandomBlock(int x, int y)
+{
+    BlockType type = rand() % NumBlockTypes;
+    return new Block(x, y, p_blocks_bitmap, type);
+}
 
+
+void Game::restart()
+{
+    reset();
+    p_focusBlock = getRandomBlock(BLOCK_START_X, BLOCK_START_Y);
+
+    // WTF: hehe
+    {
+        nextblock_t tmp = {NEXTAREA1_X, NEXTAREA1_Y, NEXTAREA1_W, NEXTAREA1_H};
+        tmp.block = getRandomBLock(tmp.x, tmp.y);
+        p_nextBlocks.push_back(tmp);
+    }
+    {
+        nextblock_t tmp = {NEXTAREA2_X, NEXTAREA2_Y, NEXTAREA2_W, NEXTAREA2_H};
+        tmp.block = getRandomBLock(tmp.x, tmp.y);
+        p_nextBlocks.push_back(tmp);
+    }
+    {
+        nextblock_t tmp = {NEXTAREA3_X, NEXTAREA3_Y, NEXTAREA3_W, NEXTAREA3_H};
+        tmp.block = getRandomBLock(tmp.x, tmp.y);
+        p_nextBlocks.push_back(tmp);
+    }
+    {
+        nextblock_t tmp = {NEXTAREA4_X, NEXTAREA4_Y, NEXTAREA4_W, NEXTAREA4_H};
+        tmp.block = getRandomBLock(tmp.x, tmp.y);
+        p_nextBlocks.push_back(tmp);
+    }
+    p_holdBlock = 0;
+
+    p_level = 1;
+    p_lines = 0;
+    p_blockSpeed = INITIAL_SPEED;
+}
 
 void Game::init()
 {
@@ -32,65 +71,68 @@ void Game::init()
     p_window = SDL_SetVideoMode(WINDOW_WIDTH, WINDOW_HEIGHT, 0, SDL_ANYFORMAT);
     SDL_WM_SetCaption(WINDOW_CAPTION, 0);
     p_timer = SDL_GetTicks();
-    p_bitmap = SDL_LoadBMP("data/lithtris.bmp");
 
-    
+    p_blocks_bitmap = SDL_LoadBMP("data/skins/blocks.bmp");
+    p_skin_bitmap = SDL_LoadBMP("data/skins/tempest-skin.bmp");
+
     srand(time(0));
-    BlockType type = rand() % NumBlockTypes;
-    p_focusBlock = new Block(BLOCK_START_X, BLOCK_START_Y, p_bitmap, type);
-    type = rand() % NumBlockTypes;
-    p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, type);
-    p_holdBlock = 0;
 
-    p_level = 1;
-    p_score = 0;
-    p_blockSpeed = INITIAL_SPEED;
-    
-    state_t state;
-    state.statePointer = &Game::exit_state;
-    p_stateStack.push(state);
-    state.statePointer = &Game::menu_state;
-    p_stateStack.push(state);
+    restart();
+  
+    pushState(&Game::exit_state);
+    pushState(&Game::menu_state);
+
     TTF_Init();
 }
 void Game::shutdown()
 {
-    if (p_focusBlock) delete(p_focusBlock);
-    if (p_nextBlock) delete(p_nextBlock);
-    if (p_holdBlock) delete(p_holdBlock);
-
-    for (int i=0; i < p_oldSquares.size(); i++) {
-        delete(p_oldSquares[i]);
-    }
-    p_oldSquares.erase(p_oldSquares.begin(),p_oldSquares.end());
+    reset();
 
     TTF_Quit();
-    SDL_FreeSurface(p_bitmap);
+    SDL_FreeSurface(p_blocks_bitmap);
+    SDL_FreeSurface(p_skin_bitmap);
     SDL_FreeSurface(p_window);
     SDL_Quit();
 }
 
-void Game::reset(statePointer)
+void Game::reset(StateFunction statePointer)
 {
-    for (int i=0; i < p_oldSquares.size(); i++)
-    {
-        delete p_oldSquares[i];
-    }
-    p_oldSquares.clear();
-    p_score = 0;
-    p_level = 1;
-    while (!p_stateStack.empty()) p_stateStack.pop();
+    int i;
+    if (p_focusBlock) delete(p_focusBlock);
+    if (p_holdBlock) delete(p_holdBlock);
 
-    state_t tmp;
-    tmp.statePointer = statePointer;
-    p_stateStack.push(tmp);
+    for (int r=0; r < MAX_ROWS; r++) {
+        for (int c=0; c < SQUARES_PER_ROW; c++) {
+            if (p_pile[r][c]) delete(p_pile[r][c]);
+        }
+    }
+    memset(p_pile,0, sizeof(p_pile));
+
+    for (i=0; i < p_nextBlocks.size(); i++) {
+        delete(p_nextBlocks[i].block);
+    }
+    p_nextBlocks.clear();
+
+    p_lines = 0;
+    p_level = 1;
+
+    clearStates();
+
+    if (statePointer) 
+    {
+        pushState(statePointer);
+    }
 }
 
 void Game::drawBackground()
 {
-    SDL_Rect src = {LEVEL_BACK_X,LEVEL_BACK_Y,WINDOW_WIDTH,WINDOW_HEIGHT};
+    SDL_Rect src = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
     SDL_Rect dest = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
-    SDL_BlitSurface(p_bitmap, &src, p_window, &dest);
+    SDL_BlitSurface(p_skin_bitmap, &src, p_window, &dest);
+}
+void Game::drawScore()
+{
+
 }
 
 void Game::clearScreen()
@@ -98,9 +140,9 @@ void Game::clearScreen()
     SDL_FillRect(p_window, 0,0);
 }
 
-void Game::displayText(std::string text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB)
+void Game::displayText(std::string text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB, const char *font_name="arial.ttf")
 {
-    static TTF_Font *font = TTF_OpenFont("arial.ttf",size);
+    static TTF_Font *font = TTF_OpenFont(fontname,size);
     SDL_Color foreground = {fR,fG,fB};
     SDL_Color background = {bR,bG,bB};
     SDL_Surface *tmp = TTF_RenderText_Shaded(font, text.c_str(), foreground, background);
@@ -116,30 +158,47 @@ void Game::handleBottomCollision()
     int num_lines = checkCompletedLines();
 
     if (num_lines > 0) {
-        int to_next_level = p_score % LINES_PER_LEVEL;
-        if (num_lines >= p_score % LINES_PER_LEVEL) { // increase level
+        p_lines += num_lines;
+        if (p_lines >= LINES_PER_LEVEL) {
             p_level++;
             checkWin();
             p_focusBlockSpeed -= SPEED_CHANGE;
+            p_lines %= LINES_PER_LEVEL;
         }
-        p_score += num_lines;
     }
 
     checkLoss();
-    changeFocusBlock();
+    nextFocusBlock();
 }
 
-void Game::changeFocusBlock()
+void Game::addBlockToPile(Block *block)
 {
-    Square **squares = p_focusBlock->getSquares();
+    int i;
+    Square **squares = block->getSquares();
+    for (i=0; i < 4; i++) {
+        SDL_Rect r = getRowCol(squares[i]->centerX(), squares[i]->centerY());
+        p_pile[r.x][r.y] = squares[i];
+    }
+}
 
-    for (int i=0; i <4; i++)
-        p_oldSquares.push_back(squares[i]);
-
+void Game::nextFocusBlock()
+{
+    addBlockToPile(p_focusBlock);
     delete p_focusBlock;
-    p_focusBlock = p_nextBlock;
-    p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_bitmap);
-    p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, (BlockType)(rand()%NumBlockTypes));
+
+    shiftNextBlocks();
+}
+
+void Game::shiftNextBlocks()
+{
+    p_focusBlock = p_nextBlock[0].block;
+    p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_blocks_bitmap);
+    for (i=0; i<3; i++)
+    {
+        p_nextBlock[i].block = p_nextBlock[i+1].block;
+        p_nextBlock[i].block->setupSquares(p_nextBlock[i].rect.x, p_nextBlock[i].rect.y, p_blocks_bitmap)
+    }
+    p_nextBlock[3].block = getRandomBlock(p_nextBlock[3].rect.x, p_nextBlock[3].rect.y, p_blocks_bitmap);
 }
 
 void Game::holdFocusBlock()
@@ -149,11 +208,10 @@ void Game::holdFocusBlock()
     p_holdBlock = pFocusBlock;
     if (temp) {
         p_focusBlock = temp;
+        p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_blocks_bitmap);
     }
     else {
-        p_focusBlock = p_nextBlock;
-        p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_bitmap);
-        p_nextBlock = new Block(NEXT_BLOCK_X, NEXT_BLOCK_Y, p_bitmap, (BlockType)(rand()%NumBlockTypes));
+        shiftNextBlocks();
     }
 }
 
