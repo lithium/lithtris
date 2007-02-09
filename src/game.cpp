@@ -106,14 +106,13 @@ void Game::reset(StateFunction statePointer)
     if (p_focusBlock) delete(p_focusBlock);
     if (p_holdBlock) delete(p_holdBlock);
 
-    for (int r=0; r < MAX_ROWS; r++) {
-        for (int c=0; c < SQUARES_PER_ROW; c++) {
-            if (p_pile[r][c]) delete(p_pile[r][c]);
-        }
+    for (i=p_oldSquares.size()-1; i >= 0; i--) {
+        delete p_oldSquares[i];
     }
+    p_oldSquares.clear();
     memset(p_pile,0, sizeof(p_pile));
 
-    for (i=0; i < p_nextBlocks.size(); i++) {
+    for (i=p_nextBlocks.size()-1; i >= 0; i--) {
         delete(p_nextBlocks[i].block);
     }
     p_nextBlocks.clear();
@@ -184,6 +183,7 @@ void Game::addBlockToPile(Block *block)
     Square **squares = block->squares();
     for (i=0; i < 4; i++) {
         SDL_Rect r = getRowCol(squares[i]->centerX(), squares[i]->centerY());
+        p_oldSquares.push_back( squares[i] );
         p_pile[r.x][r.y] = squares[i];
     }
 }

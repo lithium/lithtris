@@ -87,16 +87,14 @@ void Game::play_state()
         if (p_focusBlock) p_focusBlock->draw(p_window);
         if (p_holdBlock) p_holdBlock->draw(p_window);
         int i;
-        for (i=0; i < p_nextBlocks.size(); i++)
+        for (i=p_nextBlocks.size()-1; i>=0; i--)
         {
             p_nextBlocks[i].block->draw(p_window);
         }
 
-        for (int r=0; r < MAX_ROWS; r++) {
-            for (int c=0; c < SQUARES_PER_ROW; c++) {
-                if (p_pile[r][c]) 
-                    p_pile[r][c]->draw(p_window);
-            }
+        for (i=p_oldSquares.size()-1; i>=0; i--)
+        {
+            p_oldSquares[i]->draw(p_window);
         }
 
         drawScore();

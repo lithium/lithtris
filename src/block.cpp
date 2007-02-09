@@ -73,8 +73,15 @@ void Block::rotate(Direction dir)
         y1 = p_squares[i]->centerY() - p_centerY;
 
         //rotate and untranslate
-        x2 = -y1 + p_centerX;
-        y2 = x1 + p_centerY;
+        if (dir == Right) {
+            x2 = -y1 + p_centerX;
+            y2 = x1 + p_centerY;
+        }
+        else 
+        if (dir == Left) {
+            x2 = y1 + p_centerX;
+            y2 = -x1 + p_centerY;
+        }
 
         p_squares[i]->setCenterX(x2);
         p_squares[i]->setCenterY(y2);
@@ -179,7 +186,7 @@ int *Block::getRotatedXY(Direction dir)
         else
         if (dir == Left) {
             x2 = y1 + p_centerX;
-            y2 = -x1 + p_centerY; 
+            y2 = (-x1) + p_centerY; 
         }
 
         ret[i*2] = x2;

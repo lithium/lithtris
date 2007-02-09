@@ -13,7 +13,9 @@ SOURCES+=src/block.cpp \
          src/square.cpp \
          src/main.cpp 
 
-INCLUDEPATH += include /usr/include/SDL
+INCLUDEPATH += include 
 LIBS += `sdl-config --libs` -lSDL_ttf
+QMAKE_CXXFLAGS_DEBUG =`sdl-config --cflags`
+QMAKE_CXXFLAGS_RELEASE =`sdl-config --cflags`
 CONFIG=debug
 TARGET=lithtris
