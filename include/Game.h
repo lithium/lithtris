@@ -88,7 +88,6 @@ private:
     Block *p_holdBlock;
     std::vector<nextblock_t> p_nextBlocks;
 
-    std::vector<Square *> p_oldSquares;
     Square *p_pile[MAX_ROWS][SQUARES_PER_ROW];
     int p_level;
     int p_lines;

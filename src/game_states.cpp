@@ -92,9 +92,12 @@ void Game::play_state()
             p_nextBlocks[i].block->draw(p_window);
         }
 
-        for (i=p_oldSquares.size()-1; i>=0; i--)
-        {
-            p_oldSquares[i]->draw(p_window);
+        for (i=0; i < MAX_ROWS; i++) {
+            for (int c=0; c < SQUARES_PER_ROW; c++) {
+                if (p_pile[i][c]) {
+                    p_pile[i][c]->draw(p_window);
+                }
+            }
         }
 
         drawScore();
