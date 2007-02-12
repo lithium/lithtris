@@ -153,7 +153,12 @@ void Game::drawBackground()
 }
 void Game::drawScore()
 {
-
+    char lvl[3];
+    char lns[3];
+    sprintf(lvl, "%u", p_level);
+    sprintf(lns, "%u", p_lines);
+    displayText(lvl, LEVELAREA_X + LEVELAREA_W/2, LEVELAREA_Y + LEVELAREA_H/2, 28, 255,255,255, 0,0,0);
+    displayText(lns, LINESAREA_X + LINESAREA_W/2, LINESAREA_Y + LINESAREA_H/2, 28, 255,255,255, 0,0,0);
 }
 
 void Game::clearScreen()

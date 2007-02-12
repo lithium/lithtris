@@ -1,5 +1,6 @@
 #include "Block.h"
 
+#include <string.h>
 namespace lithtris 
 {
 

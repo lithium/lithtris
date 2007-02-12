@@ -33,6 +33,28 @@ bool Game::checkWallCollisions(Square *square, Direction dir)
     return false;
 }
 
+bool Game::checkSquareOutside(Square *square)
+{
+    int x = square->centerX();
+    int y = square->centerY();
+
+    if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
+        return true;
+    if ((y < PLAYAREA_Y) || (y > PLAYAREA_Y+PLAYAREA_H))
+        return true;
+    return false;
+}
+bool Game::checkBlockOutside(Block *block)
+{
+    Square **sqs = block->squares();
+    for (int i=0; i < 4; i++) {
+        if (checkSquareOutside(sqs[i])) {
+            return true;
+        }
+    }
+    return false;
+}
+
 bool Game::checkPileCollisions(Square *square, Direction dir)
 {
     int distance = SQUARE_MEDIAN*2;
@@ -75,10 +97,16 @@ bool Game::checkPileCollisions(Block *block, Direction dir)
 bool Game::checkRotationCollisions(Block *block, Direction dir)
 {
     Block *rot = block->getRotatedCopy(dir);
+    bool ret;
 
-    bool ret = checkCollisions(rot, InvalidDirection);
+    ret = checkBlockOutside(rot);
+    if (ret) 
+        goto check_rotation_collisions_exit;
+
+    ret = checkCollisions(rot, InvalidDirection);
+
+check_rotation_collisions_exit:
     delete rot;
-
     return ret;
 }
  

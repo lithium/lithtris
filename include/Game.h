@@ -37,6 +37,9 @@ protected:
     bool checkPileCollisions(Block *block, Direction dir);
     bool checkWallCollisions(Block *block, Direction dir);
     bool checkRotationCollisions(Block *block, Direction dir); 
+    bool checkSquareOutside(Square *square);
+    bool checkBlockOutside(Block *block);
+
 
     bool checkWin();
     bool checkLoss();

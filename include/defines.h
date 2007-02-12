@@ -53,10 +53,10 @@
 #define HOLDAREA_H 56
 
 // where the current line in level
-#define SCOREAREA_X 31
-#define SCOREAREA_Y 160
-#define SCOREAREA_W 48
-#define SCOREAREA_H 48
+#define LINESAREA_X 31
+#define LINESAREA_Y 160
+#define LINESAREA_W 48
+#define LINESAREA_H 48
 
 // where the current level is shown
 #define LEVELAREA_X 31
