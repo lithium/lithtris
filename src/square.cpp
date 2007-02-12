@@ -10,15 +10,16 @@ Square::Square()
 Square::~Square()
 {}
 
-Square::Square(int x, int y, SDL_Surface *bitmap, BlockType type)
+Square::Square(int x, int y, SDL_Surface *bitmap, BlockType type, bool is_shadow)
 {
     p_centerX = x;
     p_centerY = y;
     p_bitmap = bitmap;
     p_blockType = type;
+    p_isShadow = is_shadow;
 }
 
-void Square::draw(SDL_Surface *window)
+void Square::draw(SDL_Surface *window, bool is_shadow)
 {
     int x;
     int y = 0;
@@ -30,6 +31,9 @@ void Square::draw(SDL_Surface *window)
         case JBlock: x = BLUE_X; break;
         case SBlock: x = RED_X; break;
         case ZBlock: x = GREEN_X; break;
+    }
+    if (is_shadow || p_isShadow) {
+        y = 15;
     }
     SDL_Rect source = {x, y, SQUARE_MEDIAN*2, SQUARE_MEDIAN*2};
     SDL_Rect destination = {p_centerX - SQUARE_MEDIAN, p_centerY - SQUARE_MEDIAN, SQUARE_MEDIAN * 2, SQUARE_MEDIAN *2};

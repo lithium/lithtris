@@ -8,6 +8,7 @@ Game::Game()
 {
     p_focusBlock = 0;
     p_holdBlock = 0;
+    p_shadowBlock = 0;
     p_blocks_bitmap = 0;
     p_skin_bitmap = 0;
     p_window = 0;
@@ -34,6 +35,17 @@ Block *Game::getRandomBlock(int x, int y)
 {
     BlockType type = (BlockType)(rand() % NumBlockTypes);
     return new Block(x, y, p_blocks_bitmap, type);
+}
+
+void Game::adjustShadowBlock()
+{
+    if (p_shadowBlock) delete p_shadowBlock;
+    p_shadowBlock = p_focusBlock->getRotatedCopy(InvalidDirection);
+    p_shadowBlock->setIsShadow(true);
+    
+    while (! checkCollisions(p_shadowBlock, Down)) {
+        p_shadowBlock->move(Down);
+    }
 }
 
 
@@ -68,6 +80,7 @@ void Game::restart()
     p_level = 1;
     p_lines = 0;
     p_blockSpeed = INITIAL_SPEED;
+    adjustShadowBlock();
 }
 
 void Game::init()
@@ -77,7 +90,10 @@ void Game::init()
     SDL_WM_SetCaption(WINDOW_CAPTION, 0);
     p_timer = SDL_GetTicks();
 
-    p_blocks_bitmap = SDL_LoadBMP("data/skins/blocks.bmp");
+    p_blocks_bitmap = SDL_LoadBMP("data/skins/blocks2.bmp");
+    // set black as transparency color
+    SDL_SetColorKey(p_blocks_bitmap, SDL_SRCCOLORKEY, SDL_MapRGB(p_blocks_bitmap->format, 0,0,0));
+
     p_skin_bitmap = SDL_LoadBMP("data/skins/tempest-skin.bmp");
 
     srand(time(0));
@@ -157,12 +173,8 @@ void Game::displayText(const char *text, int x, int y, int size, int fR, int fG,
     SDL_FreeSurface(tmp);
 }
 
-
-void Game::handleBottomCollision()
+void Game::updateLines()
 {
-    addBlockToPile(p_focusBlock);
-    delete p_focusBlock;
-
     int num_lines = checkCompletedLines();
 
     if (num_lines > 0) {
@@ -176,6 +188,15 @@ void Game::handleBottomCollision()
     }
 
     //checkLoss();
+}
+
+
+void Game::handleBottomCollision()
+{
+    addBlockToPile(p_focusBlock);
+    delete p_focusBlock;
+
+    updateLines();
     nextFocusBlock();
 }
 void Game::addBlockToPile(Block *block)
@@ -191,6 +212,7 @@ void Game::addBlockToPile(Block *block)
 void Game::nextFocusBlock()
 {
     shiftNextBlocks();
+    adjustShadowBlock();
 }
 
 void Game::shiftNextBlocks()
@@ -218,6 +240,16 @@ void Game::holdFocusBlock()
     else {
         shiftNextBlocks();
     }
+    adjustShadowBlock();
+}
+
+void Game::hardDropFocusBlock()
+{
+    p_shadowBlock->setIsShadow(false);
+    addBlockToPile(p_shadowBlock);
+    updateLines();
+    delete p_focusBlock;
+    nextFocusBlock();
 }
 
 

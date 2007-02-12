@@ -13,11 +13,14 @@ class Square
 {
 public:
     Square();
-    Square(int x, int y, SDL_Surface *bitmap, BlockType type);
+    Square(int x, int y, SDL_Surface *bitmap, BlockType type, bool is_shadow = false);
     ~Square();
 
-    void draw(SDL_Surface *window);
+    void draw(SDL_Surface *window, bool is_shadow = false);
     void move(Direction dir);
+
+    bool isShadow() { return p_isShadow; }
+    void setIsShadow(bool b) { p_isShadow = b; }
 
     int centerX() { return p_centerX; }
     int centerY() { return p_centerY; }
@@ -26,6 +29,8 @@ public:
 private:
     int p_centerX;
     int p_centerY;
+
+    bool p_isShadow;
     
     enum BlockType p_blockType;
     SDL_Surface *p_bitmap;

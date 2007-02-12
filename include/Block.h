@@ -25,9 +25,13 @@ public:
     Block *getRotatedCopy(Direction dir);
     int *getRotatedXY(Direction dir);
     void setupSquares(int x, int y, SDL_Surface *bitmap);
-private:
+
+    bool isShadow() { return p_isShadow; }
+    void setIsShadow(bool b) { p_isShadow = b; }
     int p_centerX;
     int p_centerY;
+private:
+    bool p_isShadow;
     SDL_Surface *p_bitmap;
     BlockType p_type;
     Square *p_squares[4];

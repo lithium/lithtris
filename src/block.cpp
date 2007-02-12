@@ -15,6 +15,7 @@ Block::Block(int x, int y, SDL_Surface *bitmap, BlockType type)
     p_centerY = y;
     p_type = type;
     p_bitmap = bitmap;
+    p_isShadow = false;
     memset(p_squares, 0, 4*sizeof(Square *));
 
     setupSquares(x, y, bitmap);
@@ -26,6 +27,7 @@ Block::Block(int x, int y, SDL_Surface *bitmap, BlockType type, int square_xys[8
     p_centerY = y;
     p_type = type;
     p_bitmap = bitmap;
+    p_isShadow = false;
     for (int i=0; i < 4; i++) {
         p_squares[i] = new Square(square_xys[i*2],square_xys[i*2+1], bitmap, type);
     }
@@ -36,8 +38,9 @@ void Block::draw(SDL_Surface *window)
 {
     for (int i=0; i < 4; i++)
     {
-        if (p_squares[i])
-            p_squares[i]->draw(window);
+        if (p_squares[i]) {
+            p_squares[i]->draw(window, p_isShadow);
+        }
     }
 }
 
@@ -187,6 +190,10 @@ int *Block::getRotatedXY(Direction dir)
         if (dir == Left) {
             x2 = y1 + p_centerX;
             y2 = (-x1) + p_centerY; 
+        }
+        else {
+            x2 = x1 + p_centerX;
+            y2 = y1 + p_centerY;
         }
 
         ret[i*2] = x2;

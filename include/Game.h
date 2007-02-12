@@ -55,6 +55,10 @@ protected:
     void shiftNextBlocks();
     Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
     SDL_Rect getRowCol(int x, int y);
+    void adjustShadowBlock();
+    void hardDropFocusBlock();
+    void updateLines();
+
 
 
     void drawBackground();
@@ -86,6 +90,7 @@ private:
 
     Block *p_focusBlock;
     Block *p_holdBlock;
+    Block *p_shadowBlock;
     std::vector<nextblock_t> p_nextBlocks;
 
     Square *p_pile[MAX_ROWS][SQUARES_PER_ROW];
