@@ -37,12 +37,12 @@ protected:
     bool checkPileCollisions(Block *block, Direction dir);
     bool checkWallCollisions(Block *block, Direction dir);
     bool checkRotationCollisions(Block *block, Direction dir); 
-    bool checkSquareOutside(Square *square);
-    bool checkBlockOutside(Block *block);
+    bool checkSquareOutside(Square *square,Direction dir=Left);
+    bool checkBlockOutside(Block *block,Direction dir=Left);
 
 
     bool checkWin();
-    bool checkLoss();
+    bool checkLoss(Block *block);
     int checkCompletedLines();
 
     /* game.cpp */
@@ -51,15 +51,15 @@ protected:
     void reset(StateFunction statePointer=0);
     void restart();
 
-    void handleBottomCollision();
-    void addBlockToPile(Block *block);
+    bool handleBottomCollision();
+    bool addBlockToPile(Block *block);
+    bool hardDropFocusBlock();
     void nextFocusBlock();
     void holdFocusBlock();
     void shiftNextBlocks();
     Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
     SDL_Rect getRowCol(int x, int y);
     void adjustShadowBlock();
-    void hardDropFocusBlock();
     void updateLines();
 
 
@@ -67,12 +67,13 @@ protected:
     void drawBackground();
     void drawScore();
     void clearScreen();
-    void displayText(const char *text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB, const char *font_name="arial.ttf");
+    void displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB);
 
     /* game_inputs.cpp */
     void handleMenuInput();
     void handlePlayInput();
     void handleExitInput();
+    void handleLoserInput();
 
     /* game_states.cpp */
 
@@ -100,6 +101,8 @@ private:
     int p_level;
     int p_lines;
     int p_blockSpeed;
+
+    TTF_Font *p_menu_font;
 
 
     SDL_Surface *p_blocks_bitmap;

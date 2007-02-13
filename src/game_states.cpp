@@ -10,8 +10,8 @@ void Game::won_state()
     {
         handleExitInput();
         clearScreen();
-        displayText("You won!!!", 100, 120, 12, 255,255,255,0,0,0);
-        displayText("Quit Game? (y or n)", 100, 140, 12, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "You won!!!", 100,120, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "Quit Game? (y or n)", 100,140,  255,255,255, 0,0,0);
         SDL_UpdateRect(p_window, 0, 0, 0, 0);
         p_timer = SDL_GetTicks();
     }
@@ -20,10 +20,10 @@ void Game::lost_state()
 {
     if ((SDL_GetTicks() - p_timer) >= FRAME_RATE)
     {
-        handleExitInput();
+        handleLoserInput();
         clearScreen();
-        displayText("LOSER", 100, 120, 12, 255,255,255,0,0,0);
-        displayText("Quit Game? (y or n)", 100, 140, 12, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "LOSER!", 100,120, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "Now you quit.", 100,140, 255,255,255, 0,0,0);
         SDL_UpdateRect(p_window, 0, 0, 0, 0);
         p_timer = SDL_GetTicks();
     }
@@ -34,8 +34,8 @@ void Game::menu_state()
     {
         handleMenuInput();
         clearScreen();
-        displayText("(S)tart game", 120, 120, 12, 255, 255, 255, 0, 0, 0);
-        displayText("(Q)uit game", 120, 150, 12, 255, 255, 255, 0, 0, 0);
+        displayText(p_menu_font, "(S)tart game", 120,120, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "(Q)uit game", 120,150, 255,255,255, 0,0,0);
         SDL_UpdateRect(p_window, 0, 0, 0, 0);
         p_timer = SDL_GetTicks();
     }
@@ -47,7 +47,7 @@ void Game::exit_state()
     {
         handleExitInput();
         clearScreen();
-        displayText("Quit Game? (y or n)", 100, 150, 12, 255,255,255, 0,0,0);
+        displayText(p_menu_font, "Quit Game? (y or n)", 100, 150, 255,255,255, 0,0,0);
         SDL_UpdateRect(p_window,0,0,0,0);
         p_timer = SDL_GetTicks();
     }
@@ -78,7 +78,8 @@ void Game::play_state()
 
         if (slide_counter == 0) {
             slide_counter = SLIDE_TIME;
-            handleBottomCollision();
+            if (handleBottomCollision()) 
+                return;
         }
 
         clearScreen();

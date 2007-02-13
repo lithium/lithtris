@@ -33,22 +33,27 @@ bool Game::checkWallCollisions(Square *square, Direction dir)
     return false;
 }
 
-bool Game::checkSquareOutside(Square *square)
+bool Game::checkSquareOutside(Square *square, Direction dir)
 {
     int x = square->centerX();
     int y = square->centerY();
 
-    if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
-        return true;
-    if ((y < PLAYAREA_Y) || (y > PLAYAREA_Y+PLAYAREA_H))
-        return true;
+    if (dir == Left || dir == Right) {
+        if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
+            return true;
+    }
+    else 
+    if (dir == Down) {
+        if ((y < BLOCK_START_Y) || (y > BLOCK_START_Y+PLAYAREA_H))
+            return true;
+    }
     return false;
 }
-bool Game::checkBlockOutside(Block *block)
+bool Game::checkBlockOutside(Block *block, Direction dir)
 {
     Square **sqs = block->squares();
     for (int i=0; i < 4; i++) {
-        if (checkSquareOutside(sqs[i])) {
+        if (checkSquareOutside(sqs[i],dir)) {
             return true;
         }
     }
@@ -151,16 +156,23 @@ bool Game::checkWin()
 {
     if (p_level >= MAX_LEVEL) {
         reset(&Game::won_state);
+        return true;
     }
+    return false;
 }
 
-bool Game::checkLoss()
+bool Game::checkLoss(Block *block)
 {
+    if (checkBlockOutside(block, Down)) {
+        reset(&Game::lost_state); 
+        return true;
+    }
     /*
     if (checkPileCollisions(p_focusBlock, Down)) {
         reset(&Game::lost_state); 
     }
     */
+    return false;
 }
 
 

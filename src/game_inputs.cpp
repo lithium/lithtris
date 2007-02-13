@@ -56,6 +56,20 @@ void Game::handleExitInput()
             }
         }
     }
+}
+void Game::handleLoserInput()
+{
+    if ( SDL_PollEvent(&p_event)) {
+        if (p_event.type == SDL_QUIT) {
+            clearStates();
+            return;
+        }
+
+        if (p_event.type == SDL_KEYDOWN)  {
+            clearStates();
+            return;
+        }
+    }
 
 }
 
@@ -93,7 +107,8 @@ void Game::handlePlayInput()
             }
             else
             if (p_event.key.keysym.sym == KEY_HARD_DROP) {
-                hardDropFocusBlock();
+                if (hardDropFocusBlock())
+                    return;
             }
             else
             if (p_event.key.keysym.sym == KEY_HOLD) {

@@ -96,6 +96,7 @@ void Game::init()
 
     p_skin_bitmap = SDL_LoadBMP("data/skins/tempest-skin.bmp");
 
+
     srand(time(0));
 
     restart();
@@ -104,10 +105,11 @@ void Game::init()
     pushState(&Game::menu_state);
 
     TTF_Init();
+    p_menu_font = TTF_OpenFont("verdana.ttf",14);
 }
 void Game::shutdown()
 {
-    reset();
+    TTF_CloseFont(p_menu_font);
 
     TTF_Quit();
     SDL_FreeSurface(p_blocks_bitmap);
@@ -153,12 +155,14 @@ void Game::drawBackground()
 }
 void Game::drawScore()
 {
+    static TTF_Font *score_font = TTF_OpenFont("arial.ttf",28);
+
     char lvl[3];
     char lns[3];
     sprintf(lvl, "%u", p_level);
     sprintf(lns, "%u", p_lines);
-    displayText(lvl, LEVELAREA_X + LEVELAREA_W/2, LEVELAREA_Y + LEVELAREA_H/2, 28, 255,255,255, 0,0,0);
-    displayText(lns, LINESAREA_X + LINESAREA_W/2, LINESAREA_Y + LINESAREA_H/2, 28, 255,255,255, 0,0,0);
+    displayText(score_font, lvl, LEVELAREA_X + LEVELAREA_W/4, LEVELAREA_Y + LEVELAREA_H/4, 255,255,255, 0,0,0);
+    displayText(score_font, lns, LINESAREA_X + LEVELAREA_W/4, LINESAREA_Y + LINESAREA_H/4, 255,255,255, 0,0,0);
 }
 
 void Game::clearScreen()
@@ -166,9 +170,9 @@ void Game::clearScreen()
     SDL_FillRect(p_window, 0,0);
 }
 
-void Game::displayText(const char *text, int x, int y, int size, int fR, int fG, int fB, int bR, int bG, int bB, const char *font_name)
+void Game::displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB)
 {
-    static TTF_Font *font = TTF_OpenFont(font_name,size);
+    if (!font) return;
     SDL_Color foreground = {fR,fG,fB};
     SDL_Color background = {bR,bG,bB};
     SDL_Surface *tmp = TTF_RenderText_Shaded(font, text, foreground, background);
@@ -192,19 +196,20 @@ void Game::updateLines()
         }
     }
 
-    //checkLoss();
 }
 
 
-void Game::handleBottomCollision()
+bool Game::handleBottomCollision()
 {
-    addBlockToPile(p_focusBlock);
+    if (addBlockToPile(p_focusBlock))
+        return true; // loss condition
     delete p_focusBlock;
 
     updateLines();
     nextFocusBlock();
+    return false;
 }
-void Game::addBlockToPile(Block *block)
+bool Game::addBlockToPile(Block *block)
 {
     int i;
     Square **squares = block->squares();
@@ -212,6 +217,7 @@ void Game::addBlockToPile(Block *block)
         SDL_Rect r = getRowCol(squares[i]->centerX(), squares[i]->centerY());
         p_pile[r.x][r.y] = squares[i];
     }
+    return checkLoss(block);
 }
 
 void Game::nextFocusBlock()
@@ -248,13 +254,15 @@ void Game::holdFocusBlock()
     adjustShadowBlock();
 }
 
-void Game::hardDropFocusBlock()
+bool Game::hardDropFocusBlock()
 {
     p_shadowBlock->setIsShadow(false);
-    addBlockToPile(p_shadowBlock);
+    if (addBlockToPile(p_shadowBlock))
+        return true;;
     updateLines();
     delete p_focusBlock;
     nextFocusBlock();
+    return false;
 }
 
 
