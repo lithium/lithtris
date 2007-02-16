@@ -62,6 +62,9 @@ protected:
     void adjustShadowBlock();
     void updateLines();
 
+    void init_random();
+    int get_random(int min,int max);
+
 
 
     void drawBackground();
@@ -87,6 +90,8 @@ protected:
     void lost_state();
 
 private:
+    int p_rand_fd;
+
     typedef struct nextblock_dat {
         Block *block;
         SDL_Rect rect;

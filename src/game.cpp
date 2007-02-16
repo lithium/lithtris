@@ -1,5 +1,8 @@
 #include "Game.h"
+
 #include <time.h>
+#include <unistd.h>
+#include <fcntl.h>
 
 namespace lithtris
 {
@@ -12,6 +15,7 @@ Game::Game()
     p_blocks_bitmap = 0;
     p_skin_bitmap = 0;
     p_window = 0;
+    p_rand_fd = -1;
     memset(p_pile, 0, sizeof(p_pile));
     init();
 }
@@ -20,6 +24,32 @@ Game::~Game()
     shutdown();
 }
 
+
+void Game::init_random()
+{
+    if (p_rand_fd != -1) return;
+
+//    p_rand_fd = open("/dev/urandom", O_RDONLY);
+
+    if (p_rand_fd == -1) { // fallback to rand()
+        srand(time(0));
+    }
+}
+
+int Game::get_random(int min, int max)
+{
+    int ret;
+    int byte;
+    if (p_rand_fd != -1) {
+        read(p_rand_fd, &byte, sizeof(int));
+    }
+    else { // fallback to rand()
+        byte = rand();
+    }
+
+    ret = (byte % (max - min)) + min;
+    return ret;
+}
 
 void Game::run()
 {
@@ -33,7 +63,7 @@ void Game::run()
 
 Block *Game::getRandomBlock(int x, int y)
 {
-    BlockType type = (BlockType)(rand() % NumBlockTypes);
+    BlockType type = (BlockType)(get_random(0,NumBlockTypes));
     return new Block(x, y, p_blocks_bitmap, type);
 }
 
@@ -97,7 +127,7 @@ void Game::init()
     p_skin_bitmap = SDL_LoadBMP("data/skins/tempest-skin.bmp");
 
 
-    srand(time(0));
+    init_random();
 
     restart();
   
