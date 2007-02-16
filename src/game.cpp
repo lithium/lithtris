@@ -295,6 +295,18 @@ bool Game::hardDropFocusBlock()
     return false;
 }
 
+unsigned int Game::timeLeftInFrame()
+{
+    static unsigned int next_time = 0;
+    unsigned int now = SDL_GetTicks();
+
+    if (next_time <= now) {
+        next_time = now + FRAME_RATE;
+        return(0);
+    }
+    return (next_time-now);
+}
+
 
 }
 

@@ -65,6 +65,7 @@ protected:
     void init_random();
     int get_random(int min,int max);
 
+    unsigned int timeLeftInFrame();
 
 
     void drawBackground();
