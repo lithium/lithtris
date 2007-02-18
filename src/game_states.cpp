@@ -4,6 +4,9 @@
 namespace lithtris 
 {
 
+
+
+/*
 void Game::won_state()
 {
     handleExitInput();
@@ -31,12 +34,12 @@ void Game::menu_state()
     SDL_UpdateRect(p_window, 0, 0, 0, 0);
     SDL_Delay(timeLeftInFrame());
 }
-
-void Game::exit_state()
+*/
+void Game::menu_state()
 {
-    handleExitInput();
+    handleMenuInput();
     clearScreen();
-    displayText(p_menu_font, "Quit Game? (y or n)", 100, 150, 255,255,255, 0,0,0);
+    drawMenu(p_which_menu);
     SDL_UpdateRect(p_window,0,0,0,0);
     SDL_Delay(timeLeftInFrame());
 }
@@ -45,6 +48,7 @@ void Game::play_state()
 {
     static int force_down_counter = 0;
     static int slide_counter = SLIDE_TIME;
+    if (!p_playing_music) playNextMusicTrack();
 
     handlePlayInput();
     if (++force_down_counter >= p_blockSpeed)
@@ -94,16 +98,18 @@ void Game::play_state()
     SDL_Delay(timeLeftInFrame());
 }
 
-void Game::pushState(StateFunction state_func)
+void Game::keys_state()
 {
-    p_stateStack.push(state_func);
 }
 
-void Game::clearStates()
+void Game::quit_state()
 {
-    while (!p_stateStack.empty()) 
-        p_stateStack.pop();
 }
+
+void Game::restart_state()
+{
+}
+
 
 
 };

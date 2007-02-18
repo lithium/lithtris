@@ -14,7 +14,7 @@ SOURCES+=src/block.cpp \
          src/main.cpp 
 
 INCLUDEPATH += include 
-LIBS += `sdl-config --libs` -lSDL_ttf
+LIBS += `sdl-config --libs` -lSDL_ttf -lSDL_mixer
 QMAKE_CXXFLAGS_DEBUG +=`sdl-config --cflags`
 QMAKE_CXXFLAGS_RELEASE +=`sdl-config --cflags`
 CONFIG=debug

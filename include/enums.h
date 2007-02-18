@@ -4,6 +4,55 @@
 namespace lithtris
 {
 
+enum MenuId
+{
+    InvalidMenu=0,
+    MainMenu,       
+                    // Play
+                    // Options
+                    // Scores
+                    // Quit
+    OptionsMenu,    
+                    // Keys
+                    // Shadow: on
+                    // Hold: on
+                    // Back
+    ScoresMenu,
+    KeysMenu,   
+                    // Move L:
+                    // Move R:
+                    // Rotate L:
+                    // Rotate R:
+                    // Move down:
+                    // Hard drop:
+                    // Soft drop:
+                    // Hold:
+                    // Back
+    ExitMenu,
+                    // yes
+                    // no
+    WinnerMenu,
+                    // restart
+                    // quit
+    LoserMenu,
+                    // restart
+                    // quit
+    NumMenuIds,
+};
+
+enum KeyId
+{
+    InvalidKey=0,
+    MoveLeftKey,
+    MoveRightKey,
+    SoftDropKey,
+    HardDropKey,
+    RotLeftKey,
+    RotRightKey,
+    HoldKey,
+    NumKeyIds,
+};
+
 enum BlockType
 {
     SquareBlock,

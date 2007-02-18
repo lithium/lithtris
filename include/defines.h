@@ -36,6 +36,11 @@
 #define BLOCK_START_X 180
 #define BLOCK_START_Y  34
 
+#define MENU_TITLE_X    100
+#define MENU_TITLE_Y    20
+#define MENU_TITLE_W 300
+#define MENU_TITLE_H 100
+
 // offsets,widths for skin images
 #define WINDOW_WIDTH  500
 #define WINDOW_HEIGHT 310

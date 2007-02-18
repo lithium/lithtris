@@ -155,7 +155,8 @@ continue_outer:
 bool Game::checkWin()
 {
     if (p_level >= MAX_LEVEL) {
-        reset(&Game::won_state);
+        p_which_menu = WinnerMenu;
+        reset(&Game::menu_state);
         return true;
     }
     return false;
@@ -164,7 +165,9 @@ bool Game::checkWin()
 bool Game::checkLoss(Block *block)
 {
     if (checkBlockOutside(block, Down)) {
-        reset(&Game::lost_state); 
+        haltMusic();
+        p_which_menu = LoserMenu;
+        reset(&Game::menu_state); 
         return true;
     }
     /*
