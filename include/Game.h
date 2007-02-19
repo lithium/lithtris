@@ -65,6 +65,7 @@ protected:
     void nextFocusBlock();
     void holdFocusBlock();
     void shiftNextBlocks();
+    void shuffle_bag(BlockType*,int);
     Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
     SDL_Rect getRowCol(int x, int y);
     void adjustShadowBlock();

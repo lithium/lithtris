@@ -30,7 +30,7 @@
 #define INITIAL_SPEED   50
 #define SPEED_CHANGE    3 
 
-#define SLIDE_TIME      40
+#define SLIDE_TIME      20
 
 
 #define MAX_ROWS 20
@@ -54,7 +54,7 @@
 #define PLAYAREA_H SQUARE_MEDIAN*2*MAX_ROWS          //280
 
 #define BLOCK_START_X  PLAYAREA_X + (PLAYAREA_W/2)
-#define BLOCK_START_Y  PLAYAREA_Y
+#define BLOCK_START_Y  PLAYAREA_Y+SQUARE_MEDIAN*2
 
 
 // where the hold peice is displayed

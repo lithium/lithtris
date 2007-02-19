@@ -81,14 +81,15 @@ enum KeyId
 
 enum BlockType
 {
-    SquareBlock,
-    TBlock,
-    LineBlock,
-    LBlock,
-    JBlock,
-    SBlock,
-    ZBlock,
-    NumBlockTypes,
+    InvalidBlock=-1,
+    SquareBlock=0,
+    TBlock=1,
+    LineBlock=2,
+    LBlock=3,
+    JBlock=4,
+    SBlock=5,
+    ZBlock=6,
+    NumBlockTypes=7,
 };
 
 enum Direction

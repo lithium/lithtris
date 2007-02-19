@@ -75,9 +75,28 @@ void Game::run()
     }
 }
 
+void Game::shuffle_bag(BlockType *bag,int bag_size)
+{
+    for (int i=0; i < bag_size; i++) {
+        int j = get_random(0,bag_size - i);
+        BlockType t = bag[j];
+        bag[j] = bag[i];
+        bag[i] = t;
+    }
+}
+
 Block *Game::getRandomBlock(int x, int y)
 {
-    BlockType type = (BlockType)(get_random(0,NumBlockTypes));
+    static BlockType bag[7];
+    static int bag_len = -1;
+
+    if (bag_len <= 0) {
+        for (int i=0; i < 7; i++) { bag[i] = (BlockType)i; } // fill bag
+        bag_len = 7;
+        shuffle_bag(bag,7);
+    }
+    BlockType type = bag[--bag_len];
+
     return new Block(x, y, p_blocks_bitmap, type);
 }
 

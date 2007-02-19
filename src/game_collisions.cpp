@@ -42,11 +42,11 @@ bool Game::checkSquareOutside(Square *square, Direction dir)
     if (dir == Left || dir == Right) {
         if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
             return true;
-    }
+    }/*
     if (dir == Down) { 
         if (( y-SQUARE_MEDIAN <= PLAYAREA_Y))
             return true;
-    }
+    }*/
     return false;
 }
 bool Game::checkBlockOutside(Block *block, Direction dir)
