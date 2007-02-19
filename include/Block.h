@@ -31,10 +31,11 @@ public:
     int p_centerX;
     int p_centerY;
 
+    BlockType type() { return p_type; }
 private:
     bool p_isShadow;
-    SDL_Surface *p_bitmap;
     BlockType p_type;
+    SDL_Surface *p_bitmap;
     Square *p_squares[4];
 };
 

@@ -51,7 +51,18 @@ void Game::handleMenuInput()
 
         if (p_event.type != SDL_KEYDOWN) return;
         if (pekksym == SDLK_ESCAPE) {
-            p_stateStack.pop();
+            p_which_menu = ExitMenu;
+            clearStates();
+            pushState(&Game::menu_state);
+            return;
+        }
+
+        if ((pekksym == SDLK_RETURN) || (pekksym == p_keymap[RotLeftKey]) || (pekksym == p_keymap[RotRightKey]) || (pekksym == p_keymap[HoldKey])) {
+            if (p_menu_item >= p_menu[p_which_menu].size()) return;
+            const menuitem_t &mit = p_menu[p_which_menu].at(p_menu_item);
+            p_which_menu = mit.menu;
+            if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
+            pushState(mit.state);
             return;
         }
 
@@ -69,14 +80,6 @@ void Game::handleMenuInput()
             return;
         }
 
-        if ((pekksym == SDLK_RETURN) || (pekksym == p_keymap[RotLeftKey]) || (pekksym == p_keymap[RotRightKey]) || (pekksym == p_keymap[HoldKey])) {
-            if (p_menu_item >= p_menu[p_which_menu].size()) return;
-            const menuitem_t &mit = p_menu[p_which_menu].at(p_menu_item);
-            p_which_menu = mit.menu;
-            if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
-            pushState(mit.state);
-            return;
-        }
     }
 }
 void Game::handlePlayInput()
@@ -101,7 +104,8 @@ void Game::handlePlayInput()
             }
 
             if (pekksym == p_keymap[RotLeftKey]) {
-                    p_spin_ticks = SDL_GetTicks();
+                if (p_focusBlock->type() == SquareBlock) return; // HACK
+                p_spin_ticks = SDL_GetTicks();
                 if (!checkRotationCollisions(p_focusBlock, Left)) {
                     p_focusBlock->rotate(Left);
                     adjustShadowBlock();

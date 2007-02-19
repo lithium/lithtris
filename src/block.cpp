@@ -114,51 +114,49 @@ void Block::setupSquares(int x, int y, SDL_Surface *bitmap)
         case TBlock:
             //    [0]
             // [1][2][3]
-            p_squares[0] = new Square(x, y, bitmap, p_type);
-            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[2] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[0] = new Square(x, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[2] = new Square(x, y, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
         case LineBlock:
-            //    [0][1][2][3]
+            // [0][1][2][3]
             p_squares[0] = new Square(x - SQUARE_MEDIAN*4,   y, bitmap, p_type);
             p_squares[1] = new Square(x - SQUARE_MEDIAN*2,   y, bitmap, p_type);
             p_squares[2] = new Square(x, y, bitmap, p_type);
             p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
-        case LBlock:
+        case JBlock:
             // [0]
-            // [1]
-            // [2][3]
+            // [1][2][3]
             p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y - SQUARE_MEDIAN*2, bitmap, p_type);
             p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[2] = new Square(x, y, bitmap, p_type);
+            p_squares[3] = new Square(x+SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
-        case JBlock:
-            //    [0]
-            //    [1]
-            // [2][3]
-            p_squares[0] = new Square(x, y - SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[1] = new Square(x, y, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
+        case LBlock:
+            //       [0]
+            // [1][2][3]
+            p_squares[0] = new Square(x + SQUARE_MEDIAN*2, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[2] = new Square(x, y, bitmap, p_type);
+            p_squares[3] = new Square(x+SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
         case SBlock:
             //    [0][1]
             // [2][3]
-            p_squares[0] = new Square(x, y, bitmap, p_type);
-            p_squares[1] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y+SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[0] = new Square(x, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x + SQUARE_MEDIAN*2, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[3] = new Square(x, y, bitmap, p_type);
             break;
         case ZBlock:
             // [0][1]
             //    [2][3]
-            p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
-            p_squares[1] = new Square(x, y, bitmap, p_type);
-            p_squares[2] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y-SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x, y-SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[2] = new Square(x, y, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
     }
 }

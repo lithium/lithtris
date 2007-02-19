@@ -97,9 +97,9 @@ void Game::play_state()
     clearScreen();
     drawBackground();
 
-    if (p_focusBlock) p_focusBlock->draw(p_window);
     if (p_holdBlock) p_holdBlock->draw(p_window);
     if (p_shadow_on && p_shadowBlock) p_shadowBlock->draw(p_window);
+    if (p_focusBlock) p_focusBlock->draw(p_window);
     int i;
     for (i=p_nextBlocks.size()-1; i>=0; i--)
     {
