@@ -1,4 +1,5 @@
 #include "Block.h"
+#include "defines.h"
 
 #include <string.h>
 namespace lithtris 
@@ -12,8 +13,8 @@ Block::~Block()
 
 Block::Block(int x, int y, SDL_Surface *bitmap, BlockType type)
 {
-    p_centerX = x;
-    p_centerY = y;
+    p_centerX = x-SQUARE_MEDIAN;
+    p_centerY = y-SQUARE_MEDIAN;
     p_type = type;
     p_bitmap = bitmap;
     p_isShadow = false;
@@ -105,62 +106,59 @@ void Block::setupSquares(int x, int y, SDL_Surface *bitmap)
         case SquareBlock:
             // [0][2]
             // [1][3]
-            p_squares[0] = new Square(x - SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
+            p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[2] = new Square(x, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x, y, bitmap, p_type);
             break;
         case TBlock:
             //    [0]
             // [1][2][3]
-            p_squares[0] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN*3, y + SQUARE_MEDIAN, bitmap, p_type);
+            p_squares[0] = new Square(x, y, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[2] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
             break;
         case LineBlock:
-            //    [0]
-            //    [1]
-            //    [2]
-            //    [3]
-            p_squares[0] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN*3, bitmap, p_type);
-            p_squares[1] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN*3, bitmap, p_type);
+            //    [0][1][2][3]
+            p_squares[0] = new Square(x - SQUARE_MEDIAN*4,   y, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2,   y, bitmap, p_type);
+            p_squares[2] = new Square(x, y, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
             break;
         case LBlock:
             // [0]
             // [1]
             // [2][3]
-            p_squares[0] = new Square(x - SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN*3, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN*3, bitmap, p_type);
+            p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
             break;
         case JBlock:
             //    [0]
             //    [1]
             // [2][3]
-            p_squares[0] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN*3, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN*3, bitmap, p_type);
+            p_squares[0] = new Square(x, y - SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[1] = new Square(x, y, bitmap, p_type);
+            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
             break;
         case SBlock:
             //    [0][1]
             // [2][3]
-            p_squares[0] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x + SQUARE_MEDIAN*3, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x - SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
+            p_squares[0] = new Square(x, y, bitmap, p_type);
+            p_squares[1] = new Square(x + SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[2] = new Square(x - SQUARE_MEDIAN*2, y+SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
             break;
         case ZBlock:
             // [0][1]
             //    [2][3]
-            p_squares[0] = new Square(x - SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[1] = new Square(x + SQUARE_MEDIAN, y - SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[2] = new Square(x + SQUARE_MEDIAN, y + SQUARE_MEDIAN, bitmap, p_type);
-            p_squares[3] = new Square(x + SQUARE_MEDIAN*3, y + SQUARE_MEDIAN, bitmap, p_type);
+            p_squares[0] = new Square(x - SQUARE_MEDIAN*2, y, bitmap, p_type);
+            p_squares[1] = new Square(x, y, bitmap, p_type);
+            p_squares[2] = new Square(x, y + SQUARE_MEDIAN*2, bitmap, p_type);
+            p_squares[3] = new Square(x + SQUARE_MEDIAN*2, y + SQUARE_MEDIAN*2, bitmap, p_type);
             break;
     }
 }

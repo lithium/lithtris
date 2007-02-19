@@ -4,6 +4,14 @@
 namespace lithtris
 {
 
+enum DrawState {
+    NoTransition = 0,
+    PlainTransition, // new piece no lines cleared
+    LineTransition,  // lines cleared
+    LevelTransition, // level changed
+    NumDrawStates,
+};
+
 enum MenuId
 {
     InvalidMenu=0,
@@ -12,6 +20,10 @@ enum MenuId
                     // Options
                     // Scores
                     // Quit
+    PauseMenu,
+                    // Resume
+                    // Keys
+                    // Quit    
     OptionsMenu,    
                     // Keys
                     // Shadow: on
@@ -38,6 +50,20 @@ enum MenuId
                     // restart
                     // quit
     NumMenuIds,
+    // hack for toggle shit
+    MusicToggle,
+    CascadeToggle,
+    ScoreToggle,
+    ShadowToggle,
+    HoldToggle,
+    InfspinToggle,
+    MoveLeftToggle,
+    MoveRightToggle,
+    SoftDropToggle,
+    HardDropToggle,
+    SpinLeftToggle,
+    SpinRightToggle,
+    HoldKeyToggle,
 };
 
 enum KeyId

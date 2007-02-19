@@ -56,6 +56,7 @@ protected:
     void pushState(StateFunction state_func);
     void clearStates();
 
+    void pauseMusic();
     void haltMusic();
     void playNextMusicTrack();
     bool handleBottomCollision();
@@ -75,11 +76,15 @@ protected:
     unsigned int timeLeftInFrame();
 
 
+    SDL_Rect backgroundRectFromLevel(int level);
+    void drawKeysPrompt();
     void drawBackground();
+    void drawBlendedBackground(float fade_secs);
     void drawScore();
+    void drawLineTransition();
     void clearScreen();
     void drawMenu(MenuId which);
-    void displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB);
+    SDL_Rect displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB, bool transparent=true, int alpha=255, Direction align=Down);
 
     /* game_inputs.cpp */
     void handleMenuInput();
@@ -94,6 +99,8 @@ protected:
     void keys_state();
     void quit_state();
     void restart_state();
+    void toggle_state();
+    void stopplaying_state();
 
 
 private:
@@ -101,6 +108,8 @@ private:
     int p_rand_fd;
 
     std::map<KeyId, SDLKey> p_keymap;
+
+    std::stack<DrawState> p_draw_state;
 
     MenuId p_which_menu;
     int p_menu_item;
@@ -116,6 +125,16 @@ private:
 
     Mix_Music *p_music[10];
     bool p_playing_music;
+    bool p_music_paused;
+
+    bool p_music_on;
+    bool p_hold_on;
+    bool p_shadow_on;
+    bool p_cascade_on;
+    bool p_infspin_on;
+    bool p_showscore_on;
+
+    Uint32 p_spin_ticks;
 
     typedef struct nextblock_dat {
         Block *block;
@@ -130,7 +149,14 @@ private:
     Square *p_pile[MAX_ROWS][SQUARES_PER_ROW];
     int p_level;
     int p_lines;
+    int p_score;
+
     int p_blockSpeed;
+    int p_hold_locked;
+    bool p_last_tetris;
+
+    const char *p_line_message;
+    int p_line_alpha;
 
 
     SDL_Surface *p_blocks_bitmap;

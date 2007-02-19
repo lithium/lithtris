@@ -15,19 +15,20 @@ SDL_Rect Game::getRowCol(int x, int y)
 
 bool Game::checkWallCollisions(Square *square, Direction dir)
 {
+    if (!square) return true;
     int distance = SQUARE_MEDIAN*2;
     int x = square->centerX();
     int y = square->centerY();
     switch (dir) 
     {
         case Down:
-            if ( y + distance > PLAYAREA_Y+PLAYAREA_H ) return true;
+            if ( y + distance >= PLAYAREA_Y+PLAYAREA_H ) return true;
             break;
         case Left:
             if ( x - distance < PLAYAREA_X ) return true;
             break;
         case Right:
-            if ( x + distance > PLAYAREA_X+PLAYAREA_W ) return true;
+            if ( x + distance >= PLAYAREA_X+PLAYAREA_W ) return true;
             break;
     }
     return false;
@@ -42,9 +43,8 @@ bool Game::checkSquareOutside(Square *square, Direction dir)
         if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
             return true;
     }
-    else 
-    if (dir == Down) {
-        if ((y < BLOCK_START_Y) || (y > BLOCK_START_Y+PLAYAREA_H))
+    if (dir == Down) { 
+        if (( y-SQUARE_MEDIAN <= PLAYAREA_Y))
             return true;
     }
     return false;
@@ -84,9 +84,11 @@ bool Game::checkWallCollisions(Block *block, Direction dir)
 {
     Square **sqs = block->squares();
     for (int i=0; i < 4; i ++) {
+        //printf("Sq[%u] = %d <= %d\n",i,sqs[i]->centerY(), PLAYAREA_Y+PLAYAREA_H);
         if (checkWallCollisions(sqs[i], dir))
             return true;
     }
+    //printf("\n");
     return false;
 }
 bool Game::checkPileCollisions(Block *block, Direction dir)
@@ -108,7 +110,7 @@ bool Game::checkRotationCollisions(Block *block, Direction dir)
     if (ret) 
         goto check_rotation_collisions_exit;
 
-    ret = checkCollisions(rot, InvalidDirection);
+    ret = checkCollisions(rot, dir);
 
 check_rotation_collisions_exit:
     delete rot;
@@ -166,8 +168,9 @@ bool Game::checkLoss(Block *block)
 {
     if (checkBlockOutside(block, Down)) {
         haltMusic();
+        restart();
         p_which_menu = LoserMenu;
-        reset(&Game::menu_state); 
+        pushState(&Game::menu_state);
         return true;
     }
     /*

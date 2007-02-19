@@ -3,6 +3,7 @@
 
 #define WINDOW_CAPTION "lithtris"
 
+#define INF_SPIN_MS 1000
 
 #define KEY_ROTATE_LEFT     SDLK_z
 #define KEY_ROTATE_RIGHT    SDLK_x
@@ -18,6 +19,9 @@
 #define FRAMES_PER_SECOND 30
 #define FRAME_RATE        1000/FRAMES_PER_SECOND
 
+#define LINE_TIME FRAMES_PER_SECOND
+#define PLAIN_TIME FRAMES_PER_SECOND*0.5
+
 
 #define MAX_LEVEL       20
 #define LINES_PER_LEVEL 10
@@ -26,15 +30,13 @@
 #define INITIAL_SPEED   50
 #define SPEED_CHANGE    3 
 
-#define SLIDE_TIME      15
+#define SLIDE_TIME      40
 
 
 #define MAX_ROWS 20
 #define SQUARES_PER_ROW 10
 #define SQUARE_MEDIAN    7  //distance from center of square to sides
 
-#define BLOCK_START_X 180
-#define BLOCK_START_Y  34
 
 #define MENU_TITLE_X    100
 #define MENU_TITLE_Y    20
@@ -50,6 +52,10 @@
 #define PLAYAREA_Y 20
 #define PLAYAREA_W SQUARE_MEDIAN*2*SQUARES_PER_ROW   //140
 #define PLAYAREA_H SQUARE_MEDIAN*2*MAX_ROWS          //280
+
+#define BLOCK_START_X  PLAYAREA_X + (PLAYAREA_W/2)
+#define BLOCK_START_Y  PLAYAREA_Y
+
 
 // where the hold peice is displayed
 #define HOLDAREA_X 27

@@ -36,7 +36,7 @@ void Square::draw(SDL_Surface *window, bool is_shadow)
         y = 15;
     }
     SDL_Rect source = {x, y, SQUARE_MEDIAN*2, SQUARE_MEDIAN*2};
-    SDL_Rect destination = {p_centerX - SQUARE_MEDIAN, p_centerY - SQUARE_MEDIAN, SQUARE_MEDIAN * 2, SQUARE_MEDIAN *2};
+    SDL_Rect destination = {p_centerX, p_centerY, SQUARE_MEDIAN * 2, SQUARE_MEDIAN *2};
     SDL_BlitSurface(p_bitmap, &source, window, &destination);
 }
 

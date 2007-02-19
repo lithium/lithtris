@@ -17,6 +17,19 @@ Game::Game()
     p_window = 0;
     p_rand_fd = -1;
     p_has_audio = false;
+    p_music_paused = false;
+    p_hold_locked = false;
+    p_line_message = 0;
+    p_last_tetris = false;
+    p_menu_item = 0;
+
+    p_music_on = false;
+    p_hold_on = true;
+    p_shadow_on = true;
+    p_cascade_on = true;
+    p_infspin_on = true;
+    p_showscore_on = true;
+
     memset(p_pile, 0, sizeof(p_pile));
     init();
 }
@@ -87,31 +100,47 @@ void Game::restart()
 
     // WTF: hehe
     {
-        nextblock_t tmp = {0,{NEXTAREA1_X + NEXTAREA1_W/2 - SQUARE_MEDIAN, NEXTAREA1_Y + NEXTAREA1_H/2, NEXTAREA1_W, NEXTAREA1_H}};
+        nextblock_t tmp = {0,{NEXTAREA1_X + NEXTAREA1_W/2, NEXTAREA1_Y + NEXTAREA1_H/2, NEXTAREA1_W, NEXTAREA1_H}};
         tmp.block = getRandomBlock(tmp.rect.x, tmp.rect.y);
         p_nextBlocks.push_back(tmp);
     }
     {
-        nextblock_t tmp = {0,{NEXTAREA2_X + NEXTAREA2_W/2 - SQUARE_MEDIAN, NEXTAREA2_Y + NEXTAREA2_H/2, NEXTAREA2_W, NEXTAREA2_H}};
+        nextblock_t tmp = {0,{NEXTAREA2_X + NEXTAREA2_W/2, NEXTAREA2_Y + NEXTAREA2_H/2, NEXTAREA2_W, NEXTAREA2_H}};
         tmp.block = getRandomBlock(tmp.rect.x, tmp.rect.y);
         p_nextBlocks.push_back(tmp);
     }
     {
-        nextblock_t tmp = {0,{NEXTAREA3_X + NEXTAREA3_W/2 - SQUARE_MEDIAN, NEXTAREA3_Y + NEXTAREA3_H/2, NEXTAREA3_W, NEXTAREA3_H}};
+        nextblock_t tmp = {0,{NEXTAREA3_X + NEXTAREA3_W/2, NEXTAREA3_Y + NEXTAREA3_H/2, NEXTAREA3_W, NEXTAREA3_H}};
         tmp.block = getRandomBlock(tmp.rect.x, tmp.rect.y);
         p_nextBlocks.push_back(tmp);
     }
     {
-        nextblock_t tmp = {0,{NEXTAREA4_X + NEXTAREA4_W/2 - SQUARE_MEDIAN, NEXTAREA4_Y + NEXTAREA4_H/2, NEXTAREA4_W, NEXTAREA4_H}};
+        nextblock_t tmp = {0,{NEXTAREA4_X + NEXTAREA4_W/2, NEXTAREA4_Y + NEXTAREA4_H/2, NEXTAREA4_W, NEXTAREA4_H}};
         tmp.block = getRandomBlock(tmp.rect.x, tmp.rect.y);
         p_nextBlocks.push_back(tmp);
     }
     p_holdBlock = 0;
 
-    p_level = 8;
-    p_lines = 78;
+    p_level = 1;
+    p_lines = 0;
+    p_score = 0;
+    p_music_paused = false;
+    p_playing_music = false; 
+    p_draw_state.empty();
+    p_draw_state.push( NoTransition);
     p_blockSpeed = INITIAL_SPEED;
+    p_hold_locked = false;
+    p_last_tetris = false;
+    p_line_message = 0;
+
     adjustShadowBlock();
+}
+
+void Game::pauseMusic()
+{
+    p_music_paused = true;
+    p_playing_music = false;
+    Mix_PauseMusic();
 }
 
 void Game::haltMusic()
@@ -121,8 +150,16 @@ void Game::haltMusic()
 }
 void Game::playNextMusicTrack() 
 {
-    int n = ((p_level+1) / 2)-1;
-    Mix_PlayMusic(p_music[n], -1);
+    if (!p_music_on) return;
+
+    if (p_music_paused) {
+        p_music_paused = false;
+        Mix_ResumeMusic();
+    }
+    else {
+        int n = ((p_level+1) / 2)-1;
+        Mix_FadeInMusic(p_music[n], -1, 1500);
+    }
     p_playing_music = true;
 }
 
@@ -132,6 +169,7 @@ static SDL_Surface *open_with_transp(const char *filename, int r=0,int g=0,int b
     SDL_SetColorKey(s, SDL_SRCCOLORKEY, SDL_MapRGB(s->format, r,g,b));
     return s;
 }
+
 
 void Game::init()
 {
@@ -143,7 +181,6 @@ void Game::init()
         p_has_audio = true;
         Mix_SetMusicCMD(getenv("MUSIC_CMD"));
     }
-    p_playing_music = false;
 
     p_blocks_bitmap = open_with_transp("data/blocks.bmp");
 
@@ -182,27 +219,58 @@ void Game::init()
         p_menu[MainMenu].push_back(tmp);
     }
     {
-        menuitem_t tmp = {"Quit", &Game::menu_state, ExitMenu};
+        menuitem_t tmp = {"Exit", &Game::menu_state, ExitMenu};
         p_menu[MainMenu].push_back(tmp);
+    }
+
+    p_menu_titles[PauseMenu] = open_with_transp("data/menu/lithtris.bmp");
+    {
+        menuitem_t tmp = {"Resume", &Game::play_state, InvalidMenu};
+        p_menu[PauseMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Restart", &Game::restart_state, InvalidMenu};
+        p_menu[PauseMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Quit", &Game::stopplaying_state, InvalidMenu};
+        p_menu[PauseMenu].push_back(tmp);
     }
 
     p_menu_titles[OptionsMenu] = open_with_transp("data/menu/options.bmp");
     {
-        menuitem_t tmp = {"Keys", &Game::keys_state, KeysMenu};
+        menuitem_t tmp = {"Keys", &Game::menu_state, KeysMenu};
         p_menu[OptionsMenu].push_back(tmp);
     }
     {
-        menuitem_t tmp = {"Shadow: ", &Game::menu_state, KeysMenu};
+        menuitem_t tmp = {"Music: ", &Game::toggle_state, MusicToggle};
         p_menu[OptionsMenu].push_back(tmp);
     }
     {
-        menuitem_t tmp = {"Hold: ", &Game::menu_state, KeysMenu};
+        menuitem_t tmp = {"Cascade: ", &Game::toggle_state, CascadeToggle};
+        p_menu[OptionsMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Show Score: ", &Game::toggle_state, ScoreToggle};
+        p_menu[OptionsMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Shadow: ", &Game::toggle_state, ShadowToggle};
+        p_menu[OptionsMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Hold: ", &Game::toggle_state, HoldToggle};
+        p_menu[OptionsMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Inf. Spin: ", &Game::toggle_state, InfspinToggle};
         p_menu[OptionsMenu].push_back(tmp);
     }
     {
         menuitem_t tmp = {"Back", &Game::menu_state, MainMenu};
         p_menu[OptionsMenu].push_back(tmp);
     }
+
 
     p_menu_titles[ScoresMenu] = open_with_transp("data/menu/scores.bmp");
     {
@@ -210,7 +278,35 @@ void Game::init()
         p_menu[ScoresMenu].push_back(tmp);
     }
 
-//    p_menu_titles[KeysMenu] = open_with_transp("data/menu/keys.bmp");
+    p_menu_titles[KeysMenu] = open_with_transp("data/menu/options.bmp");
+    {
+        menuitem_t tmp = {"Move Left: ", &Game::keys_state, MoveLeftToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Move Right: ", &Game::keys_state, MoveRightToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Move Down: ", &Game::keys_state, SoftDropToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Hard Drop: ", &Game::keys_state, HardDropToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Spin Left: ", &Game::keys_state, SpinLeftToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Spin Right: ", &Game::keys_state, SpinRightToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Hold: ", &Game::keys_state, HoldKeyToggle};
+        p_menu[KeysMenu].push_back(tmp);
+    }
     {
         menuitem_t tmp = {"Back", &Game::menu_state, MainMenu};
         p_menu[KeysMenu].push_back(tmp);
@@ -224,25 +320,26 @@ void Game::init()
         p_menu[LoserMenu].push_back(tmp);
     }
     {
-        menuitem_t tmp = {"Quit", &Game::menu_state, ExitMenu};
+        menuitem_t tmp = {"Quit", &Game::menu_state, MainMenu};
         p_menu[WinnerMenu].push_back(tmp);
         p_menu[LoserMenu].push_back(tmp);
     }
 
+
     {
-        menuitem_t tmp = {"Yes", &Game::quit_state, InvalidMenu};
+        menuitem_t tmp = {"Yes, Exit", &Game::quit_state, InvalidMenu};
         p_menu[ExitMenu].push_back(tmp);
     }
     {
-        menuitem_t tmp = {"No", &Game::menu_state, MainMenu};
+        menuitem_t tmp = {"Back", &Game::menu_state, MainMenu};
         p_menu[ExitMenu].push_back(tmp);
     }
 
+    p_draw_state.push(NoTransition);
 
 
 
-
-
+    p_spin_ticks = SDL_GetTicks();
     init_random();
 
     restart();
@@ -289,6 +386,7 @@ void Game::reset(StateFunction statePointer)
 
     p_lines = 0;
     p_level = 1;
+    p_score = 0;
 
     clearStates();
 
@@ -297,6 +395,13 @@ void Game::reset(StateFunction statePointer)
         pushState(statePointer);
     }
 }
+
+
+void Game::drawKeysPrompt()
+{
+    displayText(p_menu_font, "Press key", WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255,0,0,0);
+}
+
 
 void Game::drawMenu(MenuId which)
 {
@@ -319,30 +424,136 @@ void Game::drawMenu(MenuId which)
         if (i == p_menu_item) {
             r = 0; g = 0; b = 255;
         }
-        displayText(p_menu_font, it->label, x, y, r,g,b, 0,0,0);
+        SDL_Rect rect = displayText(p_menu_font, it->label, x, y, r,g,b, 0,0,0, true, 255, Left);
+        switch (it->menu) {
+        case MusicToggle:
+            displayText(p_menu_font, p_music_on ? "On" : "Off", rect.x+rect.w, y, p_music_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+        case CascadeToggle:
+            displayText(p_menu_font, p_cascade_on ? "On" : "Off", rect.x+rect.w, y, p_cascade_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+        case ScoreToggle:
+            displayText(p_menu_font, p_showscore_on ? "On" : "Off", rect.x+rect.w, y, p_showscore_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+        case ShadowToggle:
+            displayText(p_menu_font, p_shadow_on ? "On" : "Off", rect.x+rect.w, y, p_shadow_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+        case HoldToggle:
+            displayText(p_menu_font, p_hold_on ? "On" : "Off", rect.x+rect.w, y, p_hold_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+        case InfspinToggle:
+            displayText(p_menu_font, p_infspin_on ? "On" : "Off", rect.x+rect.w, y, p_infspin_on?128:r,g,b, 0,0,0,true,255,Left);
+            break;
+
+        case MoveLeftToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[MoveLeftKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case MoveRightToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[MoveRightKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case SoftDropToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[SoftDropKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case HardDropToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[HardDropKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case SpinLeftToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[RotLeftKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case SpinRightToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[RotRightKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        case HoldKeyToggle:
+            displayText(p_menu_font, SDL_GetKeyName(p_keymap[HoldKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
+            break;
+        }
         y += 20;
     }
 }
 
+
+
+SDL_Rect Game::backgroundRectFromLevel(int level)
+{
+    int x = level > 10 ? WINDOW_WIDTH : 0;
+    int y = ((level-1) % 10) * WINDOW_HEIGHT;
+    SDL_Rect ret = {x,y,WINDOW_WIDTH,WINDOW_HEIGHT};
+    return ret;
+}
+
+
 void Game::drawBackground()
 {
-    int x = p_level > 10 ? WINDOW_WIDTH : 0;
-    int y = ((p_level-1) % 10) * WINDOW_HEIGHT;
-    SDL_Rect src = {x,y,WINDOW_WIDTH,WINDOW_HEIGHT};
+    if (p_draw_state.top() == LevelTransition) {
+        drawBlendedBackground(1.5);
+        return;
+    }
+    SDL_Rect src = backgroundRectFromLevel(p_level);
     SDL_Rect dest = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
     SDL_BlitSurface(p_levels_bitmap, &src, p_window, &dest);
-    printf("level %d @ (%d,%d)\n",p_level,x,y);
 }
+
+void Game::drawBlendedBackground(float fade_secs)
+{
+    SDL_Rect old_src = backgroundRectFromLevel(p_level);
+    SDL_Rect new_src = backgroundRectFromLevel(p_level+1);
+    SDL_Rect dest = {0,0,WINDOW_WIDTH,WINDOW_HEIGHT};
+
+    static SDL_Surface *old_sur = 0;
+    static SDL_Surface *new_sur = 0;
+    static float alpha=255;
+    float alpha_inc = 256 / (fade_secs * FRAMES_PER_SECOND); 
+   
+    if (old_sur == 0) {
+        old_sur = SDL_CreateRGBSurface(p_levels_bitmap->flags|SDL_SRCALPHA, WINDOW_WIDTH, WINDOW_HEIGHT, p_levels_bitmap->format->BitsPerPixel,
+            p_levels_bitmap->format->Rmask, p_levels_bitmap->format->Gmask, p_levels_bitmap->format->Bmask, p_levels_bitmap->format->Amask); 
+        SDL_BlitSurface(p_levels_bitmap, &old_src, old_sur, &dest);
+
+        new_sur = SDL_CreateRGBSurface(p_levels_bitmap->flags|SDL_SRCALPHA, WINDOW_WIDTH, WINDOW_HEIGHT, p_levels_bitmap->format->BitsPerPixel,
+            p_levels_bitmap->format->Rmask, p_levels_bitmap->format->Gmask, p_levels_bitmap->format->Bmask, p_levels_bitmap->format->Amask); 
+        SDL_BlitSurface(p_levels_bitmap, &new_src, new_sur, &dest);
+        alpha = 255;
+    }
+
+    SDL_SetAlpha(old_sur, SDL_SRCALPHA, (Uint8)(alpha));
+    SDL_SetAlpha(new_sur, SDL_SRCALPHA, (Uint8)(255-alpha));
+    SDL_BlitSurface(new_sur, &dest, p_window, &dest);
+    SDL_BlitSurface(old_sur, &dest, p_window, &dest);
+
+    alpha -= alpha_inc;
+    if (alpha < 0) { /* blending is overwith */
+        SDL_FreeSurface(old_sur);
+        SDL_FreeSurface(new_sur);
+        old_sur = new_sur = 0;
+        p_draw_state.pop();
+        p_level++;
+    }
+
+}
+
+
+void Game::drawLineTransition()
+{
+    static TTF_Font *transition_font = TTF_OpenFont("data/arial.ttf",64);
+    if (p_line_message)
+        displayText(transition_font, p_line_message, WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255, 0,0,0, true, p_line_alpha -= 256/LINE_TIME);
+}
+
 void Game::drawScore()
 {
-    static TTF_Font *score_font = TTF_OpenFont("data/arial.ttf",28);
+    static TTF_Font *score_font = TTF_OpenFont("data/arial.ttf",14);
+    static TTF_Font *level_font = TTF_OpenFont("data/arial.ttf",28);
 
-    char lvl[3];
-    char lns[3];
+    char lvl[5];
+    char lns[5];
+    char sco[25];
     sprintf(lvl, "%u", p_level);
     sprintf(lns, "%u", p_lines);
-    displayText(score_font, lvl, LEVELAREA_X + LEVELAREA_W/4, LEVELAREA_Y + LEVELAREA_H/4, 255,255,255, 0,0,0);
-    displayText(score_font, lns, LINESAREA_X + LEVELAREA_W/4, LINESAREA_Y + LINESAREA_H/4, 255,255,255, 0,0,0);
+    sprintf(sco, "%u", p_score);
+    displayText(level_font, lvl, LEVELAREA_X + LEVELAREA_W/2, LEVELAREA_Y + LEVELAREA_H/2, 255,255,255, 0,0,0);
+    displayText(level_font, lns, LINESAREA_X + LEVELAREA_W/2, LINESAREA_Y + LINESAREA_H/2, 255,255,255, 0,0,0);
+    if (p_showscore_on)
+        displayText(score_font, sco, PLAYAREA_X+PLAYAREA_W + (WINDOW_WIDTH - (PLAYAREA_X+PLAYAREA_W))/2, WINDOW_HEIGHT-14, 255,255,255,0,0,0, false);
 }
 
 void Game::clearScreen()
@@ -350,16 +561,33 @@ void Game::clearScreen()
     SDL_FillRect(p_window, 0,0);
 }
 
-void Game::displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB)
+SDL_Rect Game::displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB, bool transparent, int alpha, Direction align)
 {
-    if (!font) return;
+    SDL_Rect r = {0,0,0,0};
+    if (!font) return r;
     SDL_Color foreground = {fR,fG,fB};
     SDL_Color background = {bR,bG,bB};
     SDL_Surface *tmp = TTF_RenderText_Shaded(font, text, foreground, background);
-    SDL_Rect dest = {x,y,0,0};
 
+    if (align == Down) { // center align
+        x -= tmp->w/2;
+        y -= tmp->h/2;
+    }
+    else { // left align
+    }
+    SDL_Rect dest = {x,y,0,0};
+    r.x = x;
+    r.y = y;
+    r.w = tmp->w;
+    r.h = tmp->h;
+
+    if (transparent)
+        SDL_SetColorKey(tmp, SDL_SRCCOLORKEY, SDL_MapRGB(tmp->format, bR,bG,bB));
+
+    SDL_SetAlpha(tmp, SDL_SRCALPHA, (Uint8)(alpha));
     SDL_BlitSurface(tmp, NULL, p_window, &dest);
     SDL_FreeSurface(tmp);
+    return r;
 }
 
 void Game::updateLines()
@@ -368,14 +596,45 @@ void Game::updateLines()
 
     if (num_lines > 0) {
         if (((p_lines % LINES_PER_LEVEL) + num_lines) >= LINES_PER_LEVEL) {
-            p_level++;
             if (checkWin()) return;
             if (p_level % 2) {
                 playNextMusicTrack();
             }
             p_blockSpeed -= SPEED_CHANGE;
+            p_draw_state.push(LevelTransition);
         }
+        p_draw_state.push(LineTransition);
+        p_focusBlock = 0;
+        p_shadowBlock = 0;
         p_lines += num_lines;
+
+        
+        p_line_alpha = 255;
+        switch (num_lines) {
+            case 1: p_score += 100*p_level; 
+                    p_line_message = "Single";
+                    break;
+            case 2: p_score += 300*p_level; 
+                    p_line_message = "Double";
+                    break;
+            case 3: p_score += 500*p_level; 
+                    p_line_message = "Triple";
+                    break;
+            case 4: if (p_last_tetris) {
+                        p_score += 1200*p_level;
+                        p_line_message = "B2B Tetris";
+                    }
+                    else {
+                        p_score += 700*p_level;
+                        p_line_message = "Tetris";
+                    }
+                    break;
+        }
+        p_last_tetris = (num_lines == 4);
+    }
+    else {
+        p_draw_state.push(PlainTransition);
+        p_line_message = 0;
     }
 
 }
@@ -386,10 +645,12 @@ bool Game::handleBottomCollision()
     if (addBlockToPile(p_focusBlock))
         return true; // loss condition
     delete p_focusBlock;
+    delete p_shadowBlock;
+    p_focusBlock = 0;
+    p_shadowBlock = 0;
 
     updateLines();
-    nextFocusBlock();
-    return false;
+    return true;
 }
 bool Game::addBlockToPile(Block *block)
 {
@@ -406,6 +667,7 @@ void Game::nextFocusBlock()
 {
     shiftNextBlocks();
     adjustShadowBlock();
+    p_hold_locked = false;
 }
 
 void Game::shiftNextBlocks()
@@ -424,6 +686,8 @@ void Game::holdFocusBlock()
 {
     Block *temp = p_holdBlock;
 
+    if (p_hold_locked) return;
+
     p_holdBlock = p_focusBlock;
     p_holdBlock->setupSquares(HOLDAREA_X+HOLDAREA_W/2-SQUARE_MEDIAN, HOLDAREA_Y+HOLDAREA_H/2, p_blocks_bitmap);
     if (temp) {
@@ -434,16 +698,20 @@ void Game::holdFocusBlock()
         shiftNextBlocks();
     }
     adjustShadowBlock();
+    p_hold_locked = true;
 }
 
 bool Game::hardDropFocusBlock()
 {
+
     p_shadowBlock->setIsShadow(false);
     if (addBlockToPile(p_shadowBlock))
-        return true;;
-    updateLines();
+        return true;
     delete p_focusBlock;
-    nextFocusBlock();
+    delete p_shadowBlock;
+    p_focusBlock = 0;
+    p_shadowBlock = 0;
+    updateLines();
     return false;
 }
 

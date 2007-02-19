@@ -30,6 +30,7 @@ public:
     void setIsShadow(bool b) { p_isShadow = b; }
     int p_centerX;
     int p_centerY;
+
 private:
     bool p_isShadow;
     SDL_Surface *p_bitmap;
