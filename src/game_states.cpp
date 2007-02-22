@@ -42,15 +42,50 @@ void Game::play_state()
     static int slide_counter = SLIDE_TIME;
     static float line_transition_counter = LINE_TIME;
     static float plain_transition_counter = PLAIN_TIME;
+    static int alpha = 128;
+    static SDL_Surface *line_sur = 0;
+    static float alpha_inc = (128 / LINE_TIME);
+
+
     if (!p_playing_music) playNextMusicTrack();
 
 
     if (p_draw_state.top() == LineTransition) {
         if (--line_transition_counter) {
+            if (line_sur) {
+                alpha += alpha_inc;
+                SDL_SetAlpha(line_sur, SDL_SRCALPHA, (Uint8)(alpha));
+            }
         }
         else {
             p_draw_state.pop();
             line_transition_counter = LINE_TIME;
+            alpha = 128;
+            SDL_SetAlpha(line_sur, SDL_SRCALPHA, (Uint8)(alpha));
+            //remove 
+            std::map<int,bool>::iterator it;
+            for (it = p_completed_rows.begin(); it != p_completed_rows.end(); it++) {
+                if (!it->second) continue;
+                int row; int c;
+                for (c = 0; c < SQUARES_PER_ROW; c++) {
+                    delete p_pile[it->first][c];
+                    p_pile[it->first][c] = 0;
+                }
+                p_completed_rows[it->first] = false;
+                
+                //apply gravity
+                if (!p_cascade_on) { // naive gravity
+                    for (row=it->first - 1; row >= 0; row--) {
+                        for (c=0; c < SQUARES_PER_ROW; c++) {
+                            if (p_pile[row][c]) {
+                                p_pile[row][c]->move(Down);
+                                p_pile[row+1][c] = p_pile[row][c];
+                                p_pile[row][c] = 0;
+                            }
+                        }
+                    }
+                }
+            }
             nextFocusBlock();
         }
     }
@@ -94,6 +129,7 @@ void Game::play_state()
         handlePlayInput();
     }
 
+
     clearScreen();
     drawBackground();
 
@@ -106,11 +142,22 @@ void Game::play_state()
         p_nextBlocks[i].block->draw(p_window);
     }
 
+    if ((p_completed_rows.size() > 0) && !line_sur) {
+        line_sur = SDL_CreateRGBSurface(p_window->flags|SDL_SRCALPHA, PLAYAREA_W, SQUARE_MEDIAN*2, p_window->format->BitsPerPixel,
+            p_window->format->Rmask, p_window->format->Gmask, p_window->format->Bmask, p_window->format->Amask); 
+        SDL_FillRect(line_sur, NULL, SDL_MapRGB(line_sur->format, 255,255,255));
+        SDL_SetAlpha(line_sur, SDL_SRCALPHA, (Uint8)(alpha));
+    }
+
     for (i=0; i < MAX_ROWS; i++) {
         for (int c=0; c < SQUARES_PER_ROW; c++) {
             if (p_pile[i][c]) {
                 p_pile[i][c]->draw(p_window);
             }
+        }
+        if (line_sur && p_completed_rows[i]) { // draw a flashing completed row
+            SDL_Rect dest = {PLAYAREA_X, PLAYAREA_Y+(SQUARE_MEDIAN*2*i), PLAYAREA_W, SQUARE_MEDIAN*2};
+            SDL_BlitSurface(line_sur, NULL, p_window, &dest);
         }
     }
 
@@ -119,6 +166,7 @@ void Game::play_state()
         drawLineTransition();
 
     SDL_UpdateRect(p_window,0,0,0,0);
+
     SDL_Delay(timeLeftInFrame());
 }
 

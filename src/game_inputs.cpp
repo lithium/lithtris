@@ -82,6 +82,32 @@ void Game::handleMenuInput()
 
     }
 }
+
+/* 0 means total failure
+ * 1 means move right and rotate works
+ * -1 means move left and rotate works
+ */
+int Game::checkWallKick(Block *block, Direction dir)
+{
+    int ret = 0;
+    block->move(Left);
+    if (checkRotationCollisions(block, dir)) { // failed to rotate when moved left
+        block->move(Right);
+        block->move(Right); // move right one
+        if (!checkRotationCollisions(block, dir)) { // move right and rotate worked
+            ret = 1;
+        }
+        else
+            block->move(Left); // totally failed, move back to original position
+    }
+    else {// move left and rotate worked
+        ret =  -1;
+    }
+
+
+    return ret;
+}
+
 void Game::handlePlayInput()
 {
     static bool down_pressed = false;
@@ -105,16 +131,16 @@ void Game::handlePlayInput()
 
             if (pekksym == p_keymap[RotLeftKey]) {
                 if (p_focusBlock->type() == SquareBlock) return; // HACK
-                p_spin_ticks = SDL_GetTicks();
-                if (!checkRotationCollisions(p_focusBlock, Left)) {
+                if (!checkRotationCollisions(p_focusBlock, Left) || checkWallKick(p_focusBlock,Left) ) {
+                    p_spin_ticks = SDL_GetTicks();
                     p_focusBlock->rotate(Left);
                     adjustShadowBlock();
                 }
             }
             else
             if (pekksym == p_keymap[RotRightKey]) {
+                if (!checkRotationCollisions(p_focusBlock, Right) || checkWallKick(p_focusBlock,Right)) {
                     p_spin_ticks = SDL_GetTicks();
-                if (!checkRotationCollisions(p_focusBlock, Right)) {
                     p_focusBlock->rotate(Right);
                     adjustShadowBlock();
                 }
@@ -161,7 +187,7 @@ void Game::handlePlayInput()
    
     if (SDL_GetTicks() - KEYPRESS_DELAY >= tick)  {
         tick = SDL_GetTicks();
-        if (!checkCollisions(p_focusBlock, dir)) {
+        if (p_focusBlock && !checkCollisions(p_focusBlock, dir)) {
             p_focusBlock->move(dir);
             if (dir == Down) {
                 p_score += 1;

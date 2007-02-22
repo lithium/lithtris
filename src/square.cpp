@@ -29,8 +29,8 @@ void Square::draw(SDL_Surface *window, bool is_shadow)
         case LineBlock: x = TEAL_X; break;
         case LBlock: x = ORANGE_X; break;
         case JBlock: x = BLUE_X; break;
-        case SBlock: x = RED_X; break;
-        case ZBlock: x = GREEN_X; break;
+        case SBlock: x = GREEN_X; break;
+        case ZBlock: x = RED_X; break;
     }
     if (is_shadow || p_isShadow) {
         y = 15;

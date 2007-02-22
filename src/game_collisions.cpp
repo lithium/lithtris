@@ -36,17 +36,17 @@ bool Game::checkWallCollisions(Square *square, Direction dir)
 
 bool Game::checkSquareOutside(Square *square, Direction dir)
 {
-    int x = square->centerX();
-    int y = square->centerY();
+    int x = square->centerX() + SQUARE_MEDIAN;
+    int y = square->centerY() + SQUARE_MEDIAN;
 
     if (dir == Left || dir == Right) {
         if ((x < PLAYAREA_X) || (x > PLAYAREA_X+PLAYAREA_W))
             return true;
-    }/*
+    }
     if (dir == Down) { 
         if (( y-SQUARE_MEDIAN <= PLAYAREA_Y))
             return true;
-    }*/
+    }
     return false;
 }
 bool Game::checkBlockOutside(Block *block, Direction dir)
@@ -110,7 +110,7 @@ bool Game::checkRotationCollisions(Block *block, Direction dir)
     if (ret) 
         goto check_rotation_collisions_exit;
 
-    ret = checkCollisions(rot, dir);
+    ret = checkCollisions(rot, Down);
 
 check_rotation_collisions_exit:
     delete rot;
@@ -122,6 +122,9 @@ int Game::checkCompletedLines()
     int num_lines = 0;
     int i,c,row;
 
+    p_completed_rows.clear();
+    for (i=0; i < MAX_ROWS; i++) { p_completed_rows[i] = false; }
+
     for (i = 0; i < MAX_ROWS; i++) {
         for (c = 0; c < SQUARES_PER_ROW; c++) {
             if (!p_pile[i][c])  { // found an empty square, goto next row
@@ -131,6 +134,8 @@ int Game::checkCompletedLines()
         // we found no empty squares, a complete line!
         num_lines++;
 
+        p_completed_rows[i] = true;
+        /*
         //erase the row
         for (c = 0; c < SQUARES_PER_ROW; c++) {
             delete p_pile[i][c];
@@ -147,6 +152,8 @@ int Game::checkCompletedLines()
                 }
             }
         }
+        */
+
 continue_outer:
         ;
     }
@@ -156,7 +163,7 @@ continue_outer:
 
 bool Game::checkWin()
 {
-    if (p_level >= MAX_LEVEL) {
+    if (p_lines >= 200) {
         p_which_menu = WinnerMenu;
         reset(&Game::menu_state);
         return true;

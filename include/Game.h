@@ -51,7 +51,7 @@ protected:
     void init();
     void shutdown();
     void reset(StateFunction statePointer=0);
-    void restart();
+    void restart(int level=1);
 
     void pushState(StateFunction state_func);
     void clearStates();
@@ -70,6 +70,7 @@ protected:
     SDL_Rect getRowCol(int x, int y);
     void adjustShadowBlock();
     void updateLines();
+    int calcScore(int nlines, int level, int combo=1, bool b2b=false, int cacasde=1);
 
     void init_random();
     int get_random(int min,int max);
@@ -78,6 +79,8 @@ protected:
 
 
     SDL_Rect backgroundRectFromLevel(int level);
+
+    void drawPlayScreen();
     void drawKeysPrompt();
     void drawBackground();
     void drawBlendedBackground(float fade_secs);
@@ -88,6 +91,7 @@ protected:
     SDL_Rect displayText(TTF_Font *font, const char *text, int x, int y, int fR, int fG, int fB, int bR, int bG, int bB, bool transparent=true, int alpha=255, Direction align=Down);
 
     /* game_inputs.cpp */
+    int checkWallKick(Block *block, Direction dir);
     void handleMenuInput();
     void handlePlayInput();
     void handleKeysInput();
@@ -104,7 +108,25 @@ protected:
     void stopplaying_state();
 
 
+    typedef struct hiscore_dat {
+        int highest_level;
+        int highest_score;
+        int highest_combo;
+        int highest_line_score;
+        int longest_time; // in seconds
+        int most_lines;
+        int most_cascade;
+        int singles;
+        int doubles;
+        int triples;
+        int tetris;
+        int b2b_tetris;
+    } hiscores_t;
+
+    bool write_scores(const char *filename, hiscores_t &scores);
+    bool read_scores(const char *filename, hiscores_t &scores);
 private:
+
     bool p_has_audio;
     int p_rand_fd;
 
@@ -155,10 +177,14 @@ private:
     int p_blockSpeed;
     int p_hold_locked;
     bool p_last_tetris;
+    bool p_b2b;
+    int p_combo;
+    int p_cascade;
 
     const char *p_line_message;
     int p_line_alpha;
 
+    std::map<int,bool> p_completed_rows;
 
     SDL_Surface *p_blocks_bitmap;
     SDL_Surface *p_levels_bitmap;

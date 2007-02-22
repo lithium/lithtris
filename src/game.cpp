@@ -3,6 +3,7 @@
 #include <time.h>
 #include <unistd.h>
 #include <fcntl.h>
+#include <sstream>
 
 namespace lithtris
 {
@@ -22,11 +23,14 @@ Game::Game()
     p_line_message = 0;
     p_last_tetris = false;
     p_menu_item = 0;
+    p_b2b = false;
+    p_combo = 0;
+    p_cascade = 1;
 
-    p_music_on = false;
+    p_music_on = true;
     p_hold_on = true;
     p_shadow_on = true;
-    p_cascade_on = true;
+    p_cascade_on = false;
     p_infspin_on = true;
     p_showscore_on = true;
 
@@ -91,6 +95,11 @@ Block *Game::getRandomBlock(int x, int y)
     static int bag_len = -1;
 
     if (bag_len <= 0) {
+/*
+        static BlockType tmp_bag[7] = {TBlock, SquareBlock, ZBlock, SBlock, LineBlock, JBlock};
+        for (int i=0; i < 7; i++) { bag[i] = tmp_bag[i]; } // fill bag
+        bag_len = 7;
+        */
         for (int i=0; i < 7; i++) { bag[i] = (BlockType)i; } // fill bag
         bag_len = 7;
         shuffle_bag(bag,7);
@@ -112,7 +121,7 @@ void Game::adjustShadowBlock()
 }
 
 
-void Game::restart()
+void Game::restart(int level)
 {
     reset();
     p_focusBlock = getRandomBlock(BLOCK_START_X, BLOCK_START_Y);
@@ -140,14 +149,14 @@ void Game::restart()
     }
     p_holdBlock = 0;
 
-    p_level = 1;
+    p_level = 20;
     p_lines = 0;
     p_score = 0;
     p_music_paused = false;
     p_playing_music = false; 
     p_draw_state.empty();
     p_draw_state.push( NoTransition);
-    p_blockSpeed = INITIAL_SPEED;
+    p_blockSpeed = INITIAL_SPEED-(p_level*SPEED_CHANGE);
     p_hold_locked = false;
     p_last_tetris = false;
     p_line_message = 0;
@@ -177,6 +186,7 @@ void Game::playNextMusicTrack()
     }
     else {
         int n = ((p_level+1) / 2)-1;
+        if (n < 0) n = 0;
         Mix_FadeInMusic(p_music[n], -1, 1500);
     }
     p_playing_music = true;
@@ -500,6 +510,9 @@ SDL_Rect Game::backgroundRectFromLevel(int level)
     return ret;
 }
 
+void Game::drawPlayScreen()
+{
+}
 
 void Game::drawBackground()
 {
@@ -546,6 +559,9 @@ void Game::drawBlendedBackground(float fade_secs)
         old_sur = new_sur = 0;
         p_draw_state.pop();
         p_level++;
+        if (p_level % 2) {
+            playNextMusicTrack();
+        }
     }
 
 }
@@ -554,8 +570,16 @@ void Game::drawBlendedBackground(float fade_secs)
 void Game::drawLineTransition()
 {
     static TTF_Font *transition_font = TTF_OpenFont("data/arial.ttf",64);
-    if (p_line_message)
-        displayText(transition_font, p_line_message, WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255, 0,0,0, true, p_line_alpha -= 256/LINE_TIME);
+    if (p_line_message) {
+        std::stringstream ss;
+        if (p_b2b) 
+            ss << "B2B ";
+        ss << p_line_message;
+        if (p_combo > 1) 
+             ss << " +" << p_combo << " ";
+        displayText(transition_font, ss.str().c_str(), WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255, 0,0,0, true, p_line_alpha -= 256/LINE_TIME);
+
+    }
 }
 
 void Game::drawScore()
@@ -565,14 +589,21 @@ void Game::drawScore()
 
     char lvl[5];
     char lns[5];
-    char sco[25];
+    char sco1[25],sco2[25],sco3[25];
     sprintf(lvl, "%u", p_level);
     sprintf(lns, "%u", p_lines);
-    sprintf(sco, "%u", p_score);
+
+    sprintf(sco1,  "  Score: %u", p_score);
+    sprintf(sco2, "  Combo: +%u", p_combo);
+    sprintf(sco3, "Cascade: x%u", p_cascade);
     displayText(level_font, lvl, LEVELAREA_X + LEVELAREA_W/2, LEVELAREA_Y + LEVELAREA_H/2, 255,255,255, 0,0,0);
     displayText(level_font, lns, LINESAREA_X + LEVELAREA_W/2, LINESAREA_Y + LINESAREA_H/2, 255,255,255, 0,0,0);
-    if (p_showscore_on)
-        displayText(score_font, sco, PLAYAREA_X+PLAYAREA_W + (WINDOW_WIDTH - (PLAYAREA_X+PLAYAREA_W))/2, WINDOW_HEIGHT-14, 255,255,255,0,0,0, false);
+    if (p_showscore_on) {
+        displayText(score_font, sco1, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-42, 255,255,255,0,0,0, false, 255, Left);
+        displayText(score_font, sco2, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-28, 255,255,255,0,0,0, false, 255, Left);
+        if (p_cascade_on)
+            displayText(score_font, sco3, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-14, 255,255,255,0,0,0, false, 255, Left);
+    }
 }
 
 void Game::clearScreen()
@@ -609,53 +640,45 @@ SDL_Rect Game::displayText(TTF_Font *font, const char *text, int x, int y, int f
     return r;
 }
 
+int Game::calcScore(int nlines, int level, int combo, bool b2b, int cascade)
+{
+    return ((nlines-1)*2 + combo + (b2b?5:0) ) * 100 * cascade;
+}
+
 void Game::updateLines()
 {
     int num_lines = checkCompletedLines();
 
     if (num_lines > 0) {
         if (((p_lines % LINES_PER_LEVEL) + num_lines) >= LINES_PER_LEVEL) {
-            if (checkWin()) return;
-            if (p_level % 2) {
-                playNextMusicTrack();
-            }
             p_blockSpeed -= SPEED_CHANGE;
             p_draw_state.push(LevelTransition);
+            if (!(p_level % 2)) {
+                Mix_FadeOutMusic(1500);
+            }
         }
         p_draw_state.push(LineTransition);
         p_focusBlock = 0;
         p_shadowBlock = 0;
         p_lines += num_lines;
 
-        
         p_line_alpha = 255;
         switch (num_lines) {
-            case 1: p_score += 100*p_level; 
-                    p_line_message = "Single";
-                    break;
-            case 2: p_score += 300*p_level; 
-                    p_line_message = "Double";
-                    break;
-            case 3: p_score += 500*p_level; 
-                    p_line_message = "Triple";
-                    break;
-            case 4: if (p_last_tetris) {
-                        p_score += 1200*p_level;
-                        p_line_message = "B2B Tetris";
-                    }
-                    else {
-                        p_score += 700*p_level;
-                        p_line_message = "Tetris";
-                    }
-                    break;
+            case 1: p_line_message = "Single"; break;
+            case 2: p_line_message = "Double"; break;
+            case 3: p_line_message = "Triple"; break;
+            case 4: p_line_message = "Tetris"; break;
         }
+        p_b2b = p_last_tetris && (num_lines == 4);
         p_last_tetris = (num_lines == 4);
+        p_score += calcScore(num_lines, p_level, ++p_combo, p_b2b);
     }
     else {
         p_draw_state.push(PlainTransition);
         p_line_message = 0;
+        p_combo = 0;
     }
-
+    checkWin();
 }
 
 
@@ -756,6 +779,16 @@ void Game::clearStates()
     while (!p_stateStack.empty()) 
         p_stateStack.pop();
 }
+
+
+bool Game::write_scores(const char *filename, hiscores_t &scores)
+{
+}
+
+bool Game::read_scores(const char *filename, hiscores_t &scores)
+{
+}
+
 
 }
 
