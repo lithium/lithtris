@@ -152,7 +152,7 @@ void Game::restart(int level)
     }
     p_holdBlock = 0;
 
-    p_level = 20;
+    p_level = 1;
     p_lines = 0;
     p_score = 0;
     p_music_paused = false;
