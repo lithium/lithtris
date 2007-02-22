@@ -13,7 +13,7 @@
 #define KEY_HARD_DROP       SDLK_UP
 #define KEY_HOLD            SDLK_SPACE
 
-#define KEYPRESS_DELAY 100
+#define KEYPRESS_DELAY 60
 
 
 #define FRAMES_PER_SECOND 60
