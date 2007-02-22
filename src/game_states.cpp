@@ -173,6 +173,7 @@ void Game::play_state()
 
 void Game::quit_state()
 {
+    write_scores(p_score_filename.c_str(), p_hiscore);
     clearStates();
 }
 
@@ -187,6 +188,7 @@ void Game::stopplaying_state()
     p_which_menu = MainMenu;
     restart();
     pushState(&Game::menu_state);
+    write_scores(p_score_filename.c_str(), p_hiscore);
 }
 
 

@@ -4,6 +4,8 @@
 #include <unistd.h>
 #include <fcntl.h>
 #include <sstream>
+#include <fstream>
+#include <iostream>
 
 namespace lithtris
 {
@@ -124,6 +126,7 @@ void Game::adjustShadowBlock()
 void Game::restart(int level)
 {
     reset();
+    p_match_start = time(0);
     p_focusBlock = getRandomBlock(BLOCK_START_X, BLOCK_START_Y);
 
     // WTF: hehe
@@ -211,9 +214,29 @@ void Game::init()
         Mix_SetMusicCMD(getenv("MUSIC_CMD"));
     }
 
+    p_keymap[MoveLeftKey] = SDLK_LEFT;
+    p_keymap[MoveRightKey] = SDLK_RIGHT;
+    p_keymap[SoftDropKey] = SDLK_DOWN;
+    p_keymap[HardDropKey] = SDLK_UP;
+    p_keymap[RotLeftKey] = SDLK_z;
+    p_keymap[RotRightKey] = SDLK_x;
+    p_keymap[HoldKey] = SDLK_SPACE;
+
     p_blocks_bitmap = open_with_transp("data/blocks.bmp");
 
     p_levels_bitmap = SDL_LoadBMP("data/levels.bmp");
+
+    std::string fn(getenv("HOME"));
+    p_score_filename.assign(getenv("HOME"));
+    if (!fn.empty()) {
+        p_score_filename.append("/.lithtris");
+        mkdir(p_score_filename.c_str(), 0755);
+        p_score_filename.append("/hiscore.dat");
+    }
+    else {
+        p_score_filename.assign("/usr/local/share/lithtris/hiscore.dat");
+    }
+    read_scores(p_score_filename.c_str(), p_hiscore);
 
     p_music[0] = Mix_LoadMUS("data/music/track01.mp3");
     p_music[1] = Mix_LoadMUS("data/music/track02.mp3");
@@ -226,13 +249,6 @@ void Game::init()
     p_music[8] = Mix_LoadMUS("data/music/track09.mp3");
     p_music[9] = Mix_LoadMUS("data/music/track10.mp3");
 
-    p_keymap[MoveLeftKey] = SDLK_LEFT;
-    p_keymap[MoveRightKey] = SDLK_RIGHT;
-    p_keymap[SoftDropKey] = SDLK_DOWN;
-    p_keymap[HardDropKey] = SDLK_UP;
-    p_keymap[RotLeftKey] = SDLK_z;
-    p_keymap[RotRightKey] = SDLK_x;
-    p_keymap[HoldKey] = SDLK_SPACE;
 
     p_menu_titles[MainMenu] = open_with_transp("data/menu/lithtris.bmp");
     {
@@ -498,6 +514,27 @@ void Game::drawMenu(MenuId which)
         }
         y += 20;
     }
+
+    if (which == ScoresMenu) {
+        std::stringstream ss;
+        ss << "Highest Score: " << p_hiscore.highest_score;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+        ss.str("");
+        ss << "Highest Level: " << p_hiscore.highest_level;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+        ss.str("");
+        ss << "Longest Combo: " << p_hiscore.highest_combo;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+        ss.str("");
+        ss << "Highest Line Score: " << p_hiscore.highest_line_score;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+        ss.str("");
+        ss << "Longest Game: " << (p_hiscore.longest_time / 60) << ":" << p_hiscore.longest_time % 60;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+        ss.str("");
+        ss << "Most Lines: " << p_hiscore.most_lines;
+        displayText(p_menu_font, ss.str().c_str(), x, y += 20, 255,255,255, 0,0,0,true,255,Left);
+    }
 }
 
 
@@ -558,7 +595,8 @@ void Game::drawBlendedBackground(float fade_secs)
         SDL_FreeSurface(new_sur);
         old_sur = new_sur = 0;
         p_draw_state.pop();
-        p_level++;
+        if (++p_level > p_hiscore.highest_level) 
+            p_hiscore.highest_level = p_level;
         if (p_level % 2) {
             playNextMusicTrack();
         }
@@ -662,6 +700,7 @@ void Game::updateLines()
         p_shadowBlock = 0;
         p_lines += num_lines;
 
+
         p_line_alpha = 255;
         switch (num_lines) {
             case 1: p_line_message = "Single"; break;
@@ -671,7 +710,14 @@ void Game::updateLines()
         }
         p_b2b = p_last_tetris && (num_lines == 4);
         p_last_tetris = (num_lines == 4);
-        p_score += calcScore(num_lines, p_level, ++p_combo, p_b2b);
+        int line_score = calcScore(num_lines, p_level, ++p_combo, p_b2b);
+        p_score += line_score;
+        if (line_score > p_hiscore.highest_line_score) 
+            p_hiscore.highest_line_score = line_score;
+        if (p_combo > p_hiscore.highest_combo)
+            p_hiscore.highest_combo = p_combo;
+        if (num_lines > p_hiscore.most_lines)
+            p_hiscore.most_lines = num_lines;
     }
     else {
         p_draw_state.push(PlainTransition);
@@ -731,7 +777,7 @@ void Game::holdFocusBlock()
     if (p_hold_locked) return;
 
     p_holdBlock = p_focusBlock;
-    p_holdBlock->setupSquares(HOLDAREA_X+HOLDAREA_W/2-SQUARE_MEDIAN, HOLDAREA_Y+HOLDAREA_H/2, p_blocks_bitmap);
+    p_holdBlock->setupSquares(HOLDAREA_X+HOLDAREA_W/2, HOLDAREA_Y+HOLDAREA_H/2, p_blocks_bitmap);
     if (temp) {
         p_focusBlock = temp;
         p_focusBlock->setupSquares(BLOCK_START_X, BLOCK_START_Y, p_blocks_bitmap);
@@ -783,10 +829,68 @@ void Game::clearStates()
 
 bool Game::write_scores(const char *filename, hiscores_t &scores)
 {
+    if (!filename) return false;
+    std::ofstream ofs(filename, std::ios::trunc);
+    if (ofs.bad() || ofs.fail()) { return false; }
+
+    ofs << p_music_on << ":"
+        << p_hold_on << ":"
+        << p_shadow_on << ":"
+        << p_cascade_on << ":"
+        << p_infspin_on  << ":"
+        << p_showscore_on << ":"
+        << scores.highest_level << ":"
+        << scores.highest_score << ":"
+        << scores.highest_combo << ":"
+        << scores.highest_line_score << ":"
+        << scores.longest_time << ":"
+        << scores.most_lines << ":"
+        << scores.most_cascade << ":"
+        << (int)p_keymap[MoveLeftKey] << ":"
+        << (int)p_keymap[MoveRightKey] << ":"
+        << (int)p_keymap[SoftDropKey] << ":"
+        << (int)p_keymap[HardDropKey] << ":"
+        << (int)p_keymap[RotLeftKey] << ":"
+        << (int)p_keymap[RotRightKey] << ":"
+        << (int)p_keymap[HoldKey] << ":"
+        ;
+    ofs.close();
+    return true;
 }
 
 bool Game::read_scores(const char *filename, hiscores_t &scores)
 {
+    memset(&scores, 0, sizeof(hiscores_t));
+    if (!filename) return false;
+    std::ifstream ifs(filename, std::ios::in);
+    if (ifs.bad() || ifs.fail()) { return false; }
+
+    char c;
+
+    ifs >> p_music_on >> c
+        >> p_hold_on >> c
+        >> p_shadow_on >> c
+        >> p_cascade_on >> c
+        >> p_infspin_on  >> c
+        >> p_showscore_on >> c
+        >> scores.highest_level >> c
+        >> scores.highest_score >> c
+        >> scores.highest_combo >> c
+        >> scores.highest_line_score >> c
+        >> scores.longest_time >> c
+        >> scores.most_lines >> c
+        >> scores.most_cascade >> c
+        ;
+    int t;
+    ifs >> t >> c; p_keymap[MoveLeftKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[MoveRightKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[SoftDropKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[HardDropKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[RotLeftKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[RotRightKey] = (SDLKey)t;
+    ifs >> t >> c; p_keymap[HoldKey] = (SDLKey)t;
+    ifs.close();
+    return true;
 }
 
 

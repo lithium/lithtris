@@ -161,9 +161,20 @@ continue_outer:
     return num_lines;
 }
 
+void Game::finishMatch()
+{
+    p_match_end = time(0);
+    int match_dur = p_match_end - p_match_start;
+    if (match_dur > p_hiscore.longest_time) p_hiscore.longest_time = match_dur;
+    if (p_score > p_hiscore.highest_score) p_hiscore.highest_score = p_score;
+    haltMusic();
+    write_scores(p_score_filename.c_str(), p_hiscore);
+}
+
 bool Game::checkWin()
 {
     if (p_lines >= 200) {
+        finishMatch();
         p_which_menu = WinnerMenu;
         reset(&Game::menu_state);
         return true;
@@ -174,8 +185,7 @@ bool Game::checkWin()
 bool Game::checkLoss(Block *block)
 {
     if (checkBlockOutside(block, Down)) {
-        haltMusic();
-        restart();
+        finishMatch();
         p_which_menu = LoserMenu;
         pushState(&Game::menu_state);
         return true;

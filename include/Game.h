@@ -43,6 +43,7 @@ protected:
     bool checkBlockOutside(Block *block,Direction dir=Left);
 
 
+    void finishMatch();
     bool checkWin();
     bool checkLoss(Block *block);
     int checkCompletedLines();
@@ -116,16 +117,15 @@ protected:
         int longest_time; // in seconds
         int most_lines;
         int most_cascade;
-        int singles;
-        int doubles;
-        int triples;
-        int tetris;
-        int b2b_tetris;
     } hiscores_t;
 
     bool write_scores(const char *filename, hiscores_t &scores);
     bool read_scores(const char *filename, hiscores_t &scores);
 private:
+    std::string p_score_filename;
+    hiscores_t p_hiscore;
+    int p_match_start;
+    int p_match_end;
 
     bool p_has_audio;
     int p_rand_fd;
