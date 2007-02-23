@@ -28,6 +28,8 @@ Game::Game()
     p_b2b = false;
     p_combo = 0;
     p_cascade = 1;
+    p_transition = NoTransition;
+    p_level_transition = false;
 
     p_music_on = true;
     p_hold_on = true;
@@ -152,13 +154,12 @@ void Game::restart(int level)
     }
     p_holdBlock = 0;
 
-    p_level = 1;
+    p_level = level;
     p_lines = 0;
     p_score = 0;
     p_music_paused = false;
     p_playing_music = false; 
-    p_draw_state.empty();
-    p_draw_state.push( NoTransition);
+    p_transition = NoTransition;
     p_blockSpeed = INITIAL_SPEED-(p_level*SPEED_CHANGE);
     p_hold_locked = false;
     p_last_tetris = false;
@@ -181,7 +182,7 @@ void Game::haltMusic()
 }
 void Game::playNextMusicTrack() 
 {
-    if (!p_music_on) return;
+    if (!(p_has_audio && p_music_on)) return;
 
     if (p_music_paused) {
         p_music_paused = false;
@@ -252,7 +253,7 @@ void Game::init()
 
     p_menu_titles[MainMenu] = open_with_transp("data/menu/lithtris.bmp");
     {
-        menuitem_t tmp = {"Play", &Game::play_state, InvalidMenu};
+        menuitem_t tmp = {"Play", &Game::start_state, StartMenu};
         p_menu[MainMenu].push_back(tmp);
     }
     {
@@ -266,6 +267,20 @@ void Game::init()
     {
         menuitem_t tmp = {"Exit", &Game::menu_state, ExitMenu};
         p_menu[MainMenu].push_back(tmp);
+    }
+
+    p_menu_titles[StartMenu] = open_with_transp("data/menu/lithtris.bmp");
+    {
+        menuitem_t tmp = {"Level: ", 0, LevelToggle};
+        p_menu[StartMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Cascade: ", &Game::toggle_state, CascadeToggle};
+        p_menu[StartMenu].push_back(tmp);
+    }
+    {
+        menuitem_t tmp = {"Play", &Game::play_state, InvalidMenu};
+        p_menu[StartMenu].push_back(tmp);
     }
 
     p_menu_titles[PauseMenu] = open_with_transp("data/menu/lithtris.bmp");
@@ -289,10 +304,6 @@ void Game::init()
     }
     {
         menuitem_t tmp = {"Music: ", &Game::toggle_state, MusicToggle};
-        p_menu[OptionsMenu].push_back(tmp);
-    }
-    {
-        menuitem_t tmp = {"Cascade: ", &Game::toggle_state, CascadeToggle};
         p_menu[OptionsMenu].push_back(tmp);
     }
     {
@@ -380,7 +391,7 @@ void Game::init()
         p_menu[ExitMenu].push_back(tmp);
     }
 
-    p_draw_state.push(NoTransition);
+    p_transition = NoTransition;
 
 
 
@@ -490,6 +501,13 @@ void Game::drawMenu(MenuId which)
             displayText(p_menu_font, p_infspin_on ? "On" : "Off", rect.x+rect.w, y, p_infspin_on?128:r,g,b, 0,0,0,true,255,Left);
             break;
 
+        case LevelToggle: {
+            char tmp[3];
+            sprintf(tmp, "%2u", p_level);
+            displayText(p_menu_font, tmp, rect.x+rect.w, y, 128,g,b, 0,0,0, true,255,Left);
+        }
+            break;
+
         case MoveLeftToggle:
             displayText(p_menu_font, SDL_GetKeyName(p_keymap[MoveLeftKey]), rect.x+rect.w, y, 128,g,b, 0,0,0,true,255,Left);
             break;
@@ -553,7 +571,7 @@ void Game::drawPlayScreen()
 
 void Game::drawBackground()
 {
-    if (p_draw_state.top() == LevelTransition) {
+    if (p_level_transition) {
         drawBlendedBackground(1.5);
         return;
     }
@@ -594,7 +612,7 @@ void Game::drawBlendedBackground(float fade_secs)
         SDL_FreeSurface(old_sur);
         SDL_FreeSurface(new_sur);
         old_sur = new_sur = 0;
-        p_draw_state.pop();
+        p_level_transition = false;
         if (++p_level > p_hiscore.highest_level) 
             p_hiscore.highest_level = p_level;
         if (p_level % 2) {
@@ -607,7 +625,7 @@ void Game::drawBlendedBackground(float fade_secs)
 
 void Game::drawLineTransition()
 {
-    static TTF_Font *transition_font = TTF_OpenFont("data/arial.ttf",64);
+    static TTF_Font *transition_font = TTF_OpenFont("data/arial.ttf",32);
     if (p_line_message) {
         std::stringstream ss;
         if (p_b2b) 
@@ -616,7 +634,6 @@ void Game::drawLineTransition()
         if (p_combo > 1) 
              ss << " +" << p_combo << " ";
         displayText(transition_font, ss.str().c_str(), WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255, 0,0,0, true, p_line_alpha -= 256/LINE_TIME);
-
     }
 }
 
@@ -690,12 +707,12 @@ void Game::updateLines()
     if (num_lines > 0) {
         if (((p_lines % LINES_PER_LEVEL) + num_lines) >= LINES_PER_LEVEL) {
             p_blockSpeed -= SPEED_CHANGE;
-            p_draw_state.push(LevelTransition);
+            p_level_transition = true;
             if (!(p_level % 2)) {
                 Mix_FadeOutMusic(1500);
             }
         }
-        p_draw_state.push(LineTransition);
+        p_transition = LineTransition;
         p_focusBlock = 0;
         p_shadowBlock = 0;
         p_lines += num_lines;
@@ -720,7 +737,7 @@ void Game::updateLines()
             p_hiscore.most_lines = num_lines;
     }
     else {
-        p_draw_state.push(PlainTransition);
+        p_transition = PlainTransition;
         p_line_message = 0;
         p_combo = 0;
     }

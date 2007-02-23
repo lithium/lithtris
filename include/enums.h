@@ -49,6 +49,7 @@ enum MenuId
     LoserMenu,
                     // restart
                     // quit
+    StartMenu,
     NumMenuIds,
     // hack for toggle shit
     MusicToggle,
@@ -64,6 +65,7 @@ enum MenuId
     SpinLeftToggle,
     SpinRightToggle,
     HoldKeyToggle,
+    LevelToggle,
 };
 
 enum KeyId
@@ -97,7 +99,8 @@ enum Direction
     InvalidDirection=0,
     Left,
     Right,
-    Down
+    Down,
+    Up,
 };
 
 };

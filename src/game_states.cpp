@@ -4,6 +4,15 @@
 namespace lithtris 
 {
 
+void Game::start_state()
+{
+    handleStartInput();
+    clearScreen();
+    drawMenu(p_which_menu);
+    SDL_UpdateRect(p_window,0,0,0,0);
+    SDL_Delay(timeLeftInFrame());
+}
+
 void Game::keys_state()
 {
     handleKeysInput();
@@ -17,11 +26,15 @@ void Game::toggle_state()
 {
     switch (p_which_menu) {
         case MusicToggle: p_music_on = !p_music_on; break;
-        case CascadeToggle: p_cascade_on = !p_cascade_on; break;
         case ScoreToggle: p_showscore_on = !p_showscore_on; break;
         case ShadowToggle: p_shadow_on = !p_shadow_on; break;
         case HoldToggle: p_hold_on = !p_hold_on; break;
         case InfspinToggle: p_infspin_on = !p_infspin_on; break;
+        case CascadeToggle: 
+            p_cascade_on = !p_cascade_on; 
+            p_which_menu = StartMenu; 
+            p_stateStack.pop();
+            return;
     }
     p_which_menu = OptionsMenu;
     p_stateStack.pop();
@@ -50,7 +63,7 @@ void Game::play_state()
     if (!p_playing_music) playNextMusicTrack();
 
 
-    if (p_draw_state.top() == LineTransition) {
+    if (p_transition == LineTransition) {
         if (--line_transition_counter) {
             if (line_sur) {
                 alpha += alpha_inc;
@@ -58,7 +71,7 @@ void Game::play_state()
             }
         }
         else {
-            p_draw_state.pop();
+            p_transition = NoTransition;
             line_transition_counter = LINE_TIME;
             alpha = 128;
             SDL_SetAlpha(line_sur, SDL_SRCALPHA, (Uint8)(alpha));
@@ -90,11 +103,11 @@ void Game::play_state()
         }
     }
     else
-    if (p_draw_state.top() == PlainTransition) {
+    if (p_transition == PlainTransition) {
         if (--plain_transition_counter) {
         }
         else {
-            p_draw_state.top() = NoTransition;
+            p_transition = NoTransition;
             plain_transition_counter = PLAIN_TIME;
             nextFocusBlock();
         }
@@ -102,8 +115,8 @@ void Game::play_state()
     else 
     if (p_focusBlock)
     {
-
-        if (++force_down_counter >= p_blockSpeed)
+        force_down_counter++;
+        if (force_down_counter >= p_blockSpeed)
         {
             if (!checkCollisions(p_focusBlock,Down)) {
                 p_focusBlock->move(Down);
@@ -162,7 +175,7 @@ void Game::play_state()
     }
 
     drawScore();
-    if (p_showscore_on && (p_draw_state.top() == LineTransition))
+    if (p_showscore_on && p_transition == LineTransition) 
         drawLineTransition();
 
     SDL_UpdateRect(p_window,0,0,0,0);

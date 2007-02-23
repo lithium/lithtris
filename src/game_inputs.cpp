@@ -5,6 +5,7 @@
 namespace lithtris {
 #define pekksym p_event.key.keysym.sym
 
+
 void Game::handleKeysInput() {
     if ( SDL_PollEvent(&p_event) )
     {
@@ -40,6 +41,67 @@ void Game::handleKeysInput() {
     }
 }
 
+void Game::handleStartInput() 
+{
+    if ( SDL_PollEvent(&p_event) )
+    {
+        if (p_event.type == SDL_QUIT) {
+            clearStates();
+            return;
+        }
+
+        if (p_event.type != SDL_KEYDOWN) return;
+        if (pekksym == SDLK_ESCAPE) {
+            p_which_menu = ExitMenu;
+            clearStates();
+            pushState(&Game::menu_state);
+            return;
+        }
+
+        if ((pekksym == SDLK_RETURN) || (pekksym == p_keymap[RotLeftKey]) || (pekksym == p_keymap[RotRightKey]) || (pekksym == p_keymap[HoldKey])) {
+            if (p_menu_item >= p_menu[p_which_menu].size()) return;
+            const menuitem_t &mit = p_menu[p_which_menu].at(p_menu_item);
+            if (mit.state) {
+                p_which_menu = mit.menu;
+                if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
+                restart(p_level);
+                pushState(mit.state);
+            }
+            return;
+        }
+
+        if ((pekksym == SDLK_DOWN) || (pekksym == p_keymap[SoftDropKey]) ) {
+            if (p_menu_item >= p_menu[p_which_menu].size()-1) 
+                p_menu_item = 0;
+            else 
+                p_menu_item++;
+            return;
+        }
+        if ((pekksym == SDLK_UP) || (pekksym == p_keymap[HardDropKey]) ) {
+            if (--p_menu_item < 0) {
+                p_menu_item = p_menu[p_which_menu].size()-1;
+            }
+            return;
+        }
+
+
+        if ((pekksym == SDLK_LEFT) || (pekksym == p_keymap[MoveLeftKey])) {
+            if (p_level > 1) {
+                p_level--;
+            }
+            return;
+        }
+
+        if ((pekksym == SDLK_RIGHT) || (pekksym == p_keymap[MoveRightKey])) {
+            if (p_level < MAX_LEVEL) {
+                p_level++;
+            }
+            return;
+        }
+
+    }
+}
+
 void Game::handleMenuInput()
 {
     if ( SDL_PollEvent(&p_event) )
@@ -60,9 +122,11 @@ void Game::handleMenuInput()
         if ((pekksym == SDLK_RETURN) || (pekksym == p_keymap[RotLeftKey]) || (pekksym == p_keymap[RotRightKey]) || (pekksym == p_keymap[HoldKey])) {
             if (p_menu_item >= p_menu[p_which_menu].size()) return;
             const menuitem_t &mit = p_menu[p_which_menu].at(p_menu_item);
-            p_which_menu = mit.menu;
-            if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
-            pushState(mit.state);
+            if (mit.state) {
+                p_which_menu = mit.menu;
+                if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
+                pushState(mit.state);
+            }
             return;
         }
 
@@ -108,6 +172,38 @@ int Game::checkWallKick(Block *block, Direction dir)
     return ret;
 }
 
+/* 0 means total failure
+ * 1 means move up twice worked
+ * -1 means move up once worked
+ */
+int Game::checkFloorKick(Block *block, Direction dir)
+{ // try moving up twice
+    int ret = 0;
+    block->move(Up);
+    if (checkRotationCollisions(block, dir)) {
+        block->move(Up);
+        if (checkRotationCollisions(block,dir)) { 
+            block->move(Up);
+            if (checkRotationCollisions(block,dir)) { // totally failed move back to original position
+                block->move(Down);
+                block->move(Down);
+                block->move(Down);
+                ret = 0;
+            }
+            else {
+                ret = 3; // worked moving up thrice
+            }
+        }
+        else {
+            ret = 2; // worked moving up twice
+        }
+    }
+    else {
+        ret = 1; // worked moving up once
+    }
+    return ret;
+}
+
 void Game::handlePlayInput()
 {
     static bool down_pressed = false;
@@ -131,7 +227,7 @@ void Game::handlePlayInput()
 
             if (pekksym == p_keymap[RotLeftKey]) {
                 if (p_focusBlock->type() == SquareBlock) return; // HACK
-                if (!checkRotationCollisions(p_focusBlock, Left) || checkWallKick(p_focusBlock,Left) ) {
+                if (!checkRotationCollisions(p_focusBlock, Left) || checkWallKick(p_focusBlock,Left) || checkFloorKick(p_focusBlock,Left) ) {
                     p_spin_ticks = SDL_GetTicks();
                     p_focusBlock->rotate(Left);
                     adjustShadowBlock();
@@ -139,7 +235,7 @@ void Game::handlePlayInput()
             }
             else
             if (pekksym == p_keymap[RotRightKey]) {
-                if (!checkRotationCollisions(p_focusBlock, Right) || checkWallKick(p_focusBlock,Right)) {
+                if (!checkRotationCollisions(p_focusBlock, Right) || checkWallKick(p_focusBlock,Right) || checkFloorKick(p_focusBlock,Right) ) {
                     p_spin_ticks = SDL_GetTicks();
                     p_focusBlock->rotate(Right);
                     adjustShadowBlock();

@@ -93,14 +93,17 @@ protected:
 
     /* game_inputs.cpp */
     int checkWallKick(Block *block, Direction dir);
+    int checkFloorKick(Block *block, Direction dir);
     void handleMenuInput();
     void handlePlayInput();
     void handleKeysInput();
+    void handleStartInput();
 
     /* game_states.cpp */
 
 
     void menu_state();
+    void start_state();
     void play_state();
     void keys_state();
     void quit_state();
@@ -132,7 +135,8 @@ private:
 
     std::map<KeyId, SDLKey> p_keymap;
 
-    std::stack<DrawState> p_draw_state;
+    DrawState p_transition;
+    bool p_level_transition;
 
     MenuId p_which_menu;
     int p_menu_item;

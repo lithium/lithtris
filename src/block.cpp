@@ -58,6 +58,9 @@ void Block::move(Direction dir)
     case Down:
         p_centerY += SQUARE_MEDIAN * 2;
         break;
+    case Up:
+        p_centerY -= SQUARE_MEDIAN * 2;
+        break;
     default:
         return;
     }
