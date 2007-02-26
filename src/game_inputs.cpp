@@ -62,9 +62,9 @@ void Game::handleStartInput()
             if (p_menu_item >= p_menu[p_which_menu].size()) return;
             const menuitem_t &mit = p_menu[p_which_menu].at(p_menu_item);
             if (mit.state) {
+                p_blockSpeed = INITIAL_SPEED-(p_level*SPEED_CHANGE);
                 p_which_menu = mit.menu;
                 if (mit.menu < NumMenuIds) p_menu_item = 0; // hack
-                restart(p_level);
                 pushState(mit.state);
             }
             return;

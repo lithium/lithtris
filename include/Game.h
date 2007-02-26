@@ -42,6 +42,8 @@ protected:
     bool checkSquareOutside(Square *square,Direction dir=Left);
     bool checkBlockOutside(Block *block,Direction dir=Left);
 
+    bool checkCascades(int start_row);
+
 
     void finishMatch();
     bool checkWin();
@@ -70,7 +72,7 @@ protected:
     Block *getRandomBlock(int x = BLOCK_START_X, int y = BLOCK_START_Y);
     SDL_Rect getRowCol(int x, int y);
     void adjustShadowBlock();
-    void updateLines();
+    void updateLines(bool last=true);
     int calcScore(int nlines, int level, int combo=1, bool b2b=false, int cacasde=1);
 
     void init_random();
@@ -110,6 +112,7 @@ protected:
     void restart_state();
     void toggle_state();
     void stopplaying_state();
+    void cascade_state();
 
 
     typedef struct hiscore_dat {
@@ -178,6 +181,9 @@ private:
     int p_lines;
     int p_score;
 
+    //int p_linelines;
+    //int p_linescore;
+
     int p_blockSpeed;
     int p_hold_locked;
     bool p_last_tetris;
@@ -189,6 +195,8 @@ private:
     int p_line_alpha;
 
     std::map<int,bool> p_completed_rows;
+
+    int p_cascading_cols[SQUARES_PER_ROW];
 
     SDL_Surface *p_blocks_bitmap;
     SDL_Surface *p_levels_bitmap;

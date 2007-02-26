@@ -27,7 +27,7 @@ Game::Game()
     p_menu_item = 0;
     p_b2b = false;
     p_combo = 0;
-    p_cascade = 1;
+    p_cascade = 0;
     p_transition = NoTransition;
     p_level_transition = false;
 
@@ -271,15 +271,15 @@ void Game::init()
 
     p_menu_titles[StartMenu] = open_with_transp("data/menu/lithtris.bmp");
     {
+        menuitem_t tmp = {"Play", &Game::play_state, InvalidMenu};
+        p_menu[StartMenu].push_back(tmp);
+    }
+    {
         menuitem_t tmp = {"Level: ", 0, LevelToggle};
         p_menu[StartMenu].push_back(tmp);
     }
     {
         menuitem_t tmp = {"Cascade: ", &Game::toggle_state, CascadeToggle};
-        p_menu[StartMenu].push_back(tmp);
-    }
-    {
-        menuitem_t tmp = {"Play", &Game::play_state, InvalidMenu};
         p_menu[StartMenu].push_back(tmp);
     }
 
@@ -632,7 +632,9 @@ void Game::drawLineTransition()
             ss << "B2B ";
         ss << p_line_message;
         if (p_combo > 1) 
-             ss << " +" << p_combo << " ";
+             ss << " +" << p_combo;
+        if (p_cascade > 1)
+            ss << " x" << p_cascade;
         displayText(transition_font, ss.str().c_str(), WINDOW_WIDTH/2, WINDOW_HEIGHT/2, 255,255,255, 0,0,0, true, p_line_alpha -= 256/LINE_TIME);
     }
 }
@@ -648,16 +650,13 @@ void Game::drawScore()
     sprintf(lvl, "%u", p_level);
     sprintf(lns, "%u", p_lines);
 
-    sprintf(sco1,  "  Score: %u", p_score);
-    sprintf(sco2, "  Combo: +%u", p_combo);
-    sprintf(sco3, "Cascade: x%u", p_cascade);
     displayText(level_font, lvl, LEVELAREA_X + LEVELAREA_W/2, LEVELAREA_Y + LEVELAREA_H/2, 255,255,255, 0,0,0);
     displayText(level_font, lns, LINESAREA_X + LEVELAREA_W/2, LINESAREA_Y + LINESAREA_H/2, 255,255,255, 0,0,0);
     if (p_showscore_on) {
+        sprintf(sco1,  "  Score: %u", p_score);
         displayText(score_font, sco1, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-42, 255,255,255,0,0,0, false, 255, Left);
+        sprintf(sco2, "  Combo: +%u", p_combo);
         displayText(score_font, sco2, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-28, 255,255,255,0,0,0, false, 255, Left);
-        if (p_cascade_on)
-            displayText(score_font, sco3, PLAYAREA_X+PLAYAREA_W + 14, WINDOW_HEIGHT-14, 255,255,255,0,0,0, false, 255, Left);
     }
 }
 
@@ -700,23 +699,18 @@ int Game::calcScore(int nlines, int level, int combo, bool b2b, int cascade)
     return ((nlines-1)*2 + combo + (b2b?5:0) ) * 100 * cascade;
 }
 
-void Game::updateLines()
+void Game::updateLines(bool last)
 {
+    static int line_lines = 0;
     int num_lines = checkCompletedLines();
 
     if (num_lines > 0) {
-        if (((p_lines % LINES_PER_LEVEL) + num_lines) >= LINES_PER_LEVEL) {
-            p_blockSpeed -= SPEED_CHANGE;
-            p_level_transition = true;
-            if (!(p_level % 2)) {
-                Mix_FadeOutMusic(1500);
-            }
-        }
         p_transition = LineTransition;
         p_focusBlock = 0;
         p_shadowBlock = 0;
-        p_lines += num_lines;
-
+        //p_lines += num_lines;
+        line_lines += num_lines;
+        p_cascade++;
 
         p_line_alpha = 255;
         switch (num_lines) {
@@ -725,23 +719,41 @@ void Game::updateLines()
             case 3: p_line_message = "Triple"; break;
             case 4: p_line_message = "Tetris"; break;
         }
-        p_b2b = p_last_tetris && (num_lines == 4);
-        p_last_tetris = (num_lines == 4);
-        int line_score = calcScore(num_lines, p_level, ++p_combo, p_b2b);
-        p_score += line_score;
+    }
+
+    if (last) {
+        p_b2b = p_last_tetris && (line_lines >= 4);
+        p_last_tetris = (line_lines >= 4);
+        int line_score = calcScore(line_lines, p_level, ++p_combo, p_b2b, p_cascade);
         if (line_score > p_hiscore.highest_line_score) 
             p_hiscore.highest_line_score = line_score;
         if (p_combo > p_hiscore.highest_combo)
             p_hiscore.highest_combo = p_combo;
-        if (num_lines > p_hiscore.most_lines)
-            p_hiscore.most_lines = num_lines;
+        p_score += line_score;
+        p_lines += line_lines;
+
+        if ((p_lines % LINES_PER_LEVEL) >= LINES_PER_LEVEL) {
+            p_blockSpeed -= SPEED_CHANGE;
+            p_level_transition = true;
+            if (!(p_level % 2)) {
+                Mix_FadeOutMusic(1500);
+            }
+        }
+        if (line_lines > p_hiscore.most_lines)
+            p_hiscore.most_lines = line_lines;
+        line_lines = 0;
+        p_cascade = 0;
     }
-    else {
+
+    if (num_lines < 1) {
         p_transition = PlainTransition;
         p_line_message = 0;
         p_combo = 0;
     }
+
+
     checkWin();
+
 }
 
 
@@ -754,7 +766,7 @@ bool Game::handleBottomCollision()
     p_focusBlock = 0;
     p_shadowBlock = 0;
 
-    updateLines();
+    updateLines(!p_cascade_on);
     return true;
 }
 bool Game::addBlockToPile(Block *block)
@@ -816,7 +828,7 @@ bool Game::hardDropFocusBlock()
     delete p_shadowBlock;
     p_focusBlock = 0;
     p_shadowBlock = 0;
-    updateLines();
+    updateLines(!p_cascade_on);
     return false;
 }
 
