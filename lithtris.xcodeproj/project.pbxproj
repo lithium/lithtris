@@ -7,92 +7,93 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		1275C03917EEB77C00E25BA2 /* block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03217EEB77C00E25BA2 /* block.cpp */; };
-		1275C03A17EEB77C00E25BA2 /* game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03317EEB77C00E25BA2 /* game.cpp */; };
-		1275C03B17EEB77C00E25BA2 /* game_collisions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03417EEB77C00E25BA2 /* game_collisions.cpp */; };
-		1275C03C17EEB77C00E25BA2 /* game_inputs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03517EEB77C00E25BA2 /* game_inputs.cpp */; };
-		1275C03D17EEB77C00E25BA2 /* game_states.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03617EEB77C00E25BA2 /* game_states.cpp */; };
-		1275C03E17EEB77C00E25BA2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03717EEB77C00E25BA2 /* main.cpp */; };
-		1275C03F17EEB77C00E25BA2 /* square.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03817EEB77C00E25BA2 /* square.cpp */; };
-		1275C04817EEB95400E25BA2 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1275C04717EEB95400E25BA2 /* SDLMain.m */; };
-		1275C04A17EEB96A00E25BA2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04917EEB96A00E25BA2 /* CoreFoundation.framework */; };
-		1275C04C17EEB9CF00E25BA2 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04B17EEB9CF00E25BA2 /* libobjc.dylib */; };
-		1275C05B17EEC72200E25BA2 /* blocks.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05317EEBBB300E25BA2 /* blocks.bmp */; };
-		1275C07017EEC7C400E25BA2 /* levels.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05D17EEC78B00E25BA2 /* levels.bmp */; };
-		1275C07117EEC7D200E25BA2 /* lithtris.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05F17EEC79400E25BA2 /* lithtris.bmp */; };
-		1275C07217EEC7D400E25BA2 /* loser.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06017EEC79400E25BA2 /* loser.bmp */; };
-		1275C07317EEC7D500E25BA2 /* options.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06117EEC79400E25BA2 /* options.bmp */; };
-		1275C07417EEC7D700E25BA2 /* scores.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06217EEC79400E25BA2 /* scores.bmp */; };
-		1275C07517EEC7DA00E25BA2 /* winner.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06317EEC79400E25BA2 /* winner.bmp */; };
-		1275C07717EEC7EC00E25BA2 /* track01.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06517EEC79A00E25BA2 /* track01.mp3 */; };
-		1275C07917EEC7F900E25BA2 /* track02.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06617EEC79A00E25BA2 /* track02.mp3 */; };
-		1275C07A17EEC7FC00E25BA2 /* track03.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06717EEC79A00E25BA2 /* track03.mp3 */; };
-		1275C07B17EEC7FF00E25BA2 /* track04.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06817EEC79A00E25BA2 /* track04.mp3 */; };
-		1275C07C17EEC80100E25BA2 /* track05.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06917EEC79A00E25BA2 /* track05.mp3 */; };
-		1275C07D17EEC80400E25BA2 /* track06.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06A17EEC79A00E25BA2 /* track06.mp3 */; };
-		1275C07E17EEC80600E25BA2 /* track07.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06B17EEC79A00E25BA2 /* track07.mp3 */; };
-		1275C07F17EEC80E00E25BA2 /* track08.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06C17EEC79A00E25BA2 /* track08.mp3 */; };
-		1275C08017EEC81100E25BA2 /* track09.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06D17EEC79A00E25BA2 /* track09.mp3 */; };
-		1275C08117EEC81400E25BA2 /* track10.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06E17EEC79A00E25BA2 /* track10.mp3 */; };
-		1275C08317EEC8EC00E25BA2 /* arial.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C08217EEC8E200E25BA2 /* arial.ttf */; };
-		1275C0B817EF594A00E25BA2 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B517EF594A00E25BA2 /* SDL_mixer.framework */; };
-		1275C0B917EF594A00E25BA2 /* SDL_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B617EF594A00E25BA2 /* SDL_ttf.framework */; };
-		1275C0BA17EF594A00E25BA2 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B717EF594A00E25BA2 /* SDL.framework */; };
-		1275C0BC17EF5A1200E25BA2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C09017EF574200E25BA2 /* Foundation.framework */; };
-		1275C0BD17EF5A1500E25BA2 /* libmenu.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04F17EEB9F200E25BA2 /* libmenu.dylib */; };
-		1275C0BE17EF5A2600E25BA2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C08E17EF574200E25BA2 /* AppKit.framework */; };
+		1275C0CF17EF5C0700E25BA2 /* InfoPlist.strings in Resources */ = {isa = PBXBuildFile; fileRef = 1275C0CD17EF5C0700E25BA2 /* InfoPlist.strings */; };
+		1275C0D517EF5C0700E25BA2 /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 1275C0D317EF5C0700E25BA2 /* Credits.rtf */; };
+		1275C0DF17EF5C9100E25BA2 /* block.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03217EEB77C00E25BA2 /* block.cpp */; };
+		1275C0E017EF5C9100E25BA2 /* game.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03317EEB77C00E25BA2 /* game.cpp */; };
+		1275C0E117EF5C9100E25BA2 /* game_collisions.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03417EEB77C00E25BA2 /* game_collisions.cpp */; };
+		1275C0E217EF5C9100E25BA2 /* game_inputs.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03517EEB77C00E25BA2 /* game_inputs.cpp */; };
+		1275C0E317EF5C9100E25BA2 /* game_states.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03617EEB77C00E25BA2 /* game_states.cpp */; };
+		1275C0E417EF5C9100E25BA2 /* main.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03717EEB77C00E25BA2 /* main.cpp */; };
+		1275C0E517EF5C9100E25BA2 /* square.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 1275C03817EEB77C00E25BA2 /* square.cpp */; };
+		1275C0E617EF5CA400E25BA2 /* libmenu.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04F17EEB9F200E25BA2 /* libmenu.dylib */; };
+		1275C0E717EF5CA400E25BA2 /* libobjc.dylib in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04B17EEB9CF00E25BA2 /* libobjc.dylib */; };
+		1275C0E817EF5CB100E25BA2 /* AppKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C08E17EF574200E25BA2 /* AppKit.framework */; };
+		1275C0E917EF5CB100E25BA2 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C09017EF574200E25BA2 /* Foundation.framework */; };
+		1275C0EA17EF5CB100E25BA2 /* CoreFoundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C04917EEB96A00E25BA2 /* CoreFoundation.framework */; };
+		1275C0EB17EF5CB600E25BA2 /* SDL_mixer.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B517EF594A00E25BA2 /* SDL_mixer.framework */; };
+		1275C0EC17EF5CB600E25BA2 /* SDL_ttf.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B617EF594A00E25BA2 /* SDL_ttf.framework */; };
+		1275C0ED17EF5CB600E25BA2 /* SDL.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 1275C0B717EF594A00E25BA2 /* SDL.framework */; };
+		1275C0EF17EF5CF000E25BA2 /* arial.ttf in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C08217EEC8E200E25BA2 /* arial.ttf */; };
+		1275C0F017EF5CF000E25BA2 /* blocks.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05317EEBBB300E25BA2 /* blocks.bmp */; };
+		1275C0F117EF5CF000E25BA2 /* levels.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05D17EEC78B00E25BA2 /* levels.bmp */; };
+		1275C0F317EF5D0400E25BA2 /* track01.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06517EEC79A00E25BA2 /* track01.mp3 */; };
+		1275C0F417EF5D0400E25BA2 /* track02.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06617EEC79A00E25BA2 /* track02.mp3 */; };
+		1275C0F517EF5D0400E25BA2 /* track03.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06717EEC79A00E25BA2 /* track03.mp3 */; };
+		1275C0F617EF5D0400E25BA2 /* track04.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06817EEC79A00E25BA2 /* track04.mp3 */; };
+		1275C0F717EF5D0400E25BA2 /* track05.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06917EEC79A00E25BA2 /* track05.mp3 */; };
+		1275C0F817EF5D0400E25BA2 /* track06.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06A17EEC79A00E25BA2 /* track06.mp3 */; };
+		1275C0F917EF5D0400E25BA2 /* track07.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06B17EEC79A00E25BA2 /* track07.mp3 */; };
+		1275C0FA17EF5D0400E25BA2 /* track08.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06C17EEC79A00E25BA2 /* track08.mp3 */; };
+		1275C0FB17EF5D0400E25BA2 /* track09.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06D17EEC79A00E25BA2 /* track09.mp3 */; };
+		1275C0FC17EF5D0400E25BA2 /* track10.mp3 in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06E17EEC79A00E25BA2 /* track10.mp3 */; };
+		1275C0FE17EF5D1600E25BA2 /* lithtris.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C05F17EEC79400E25BA2 /* lithtris.bmp */; };
+		1275C0FF17EF5D1600E25BA2 /* loser.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06017EEC79400E25BA2 /* loser.bmp */; };
+		1275C10017EF5D1600E25BA2 /* options.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06117EEC79400E25BA2 /* options.bmp */; };
+		1275C10117EF5D1600E25BA2 /* scores.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06217EEC79400E25BA2 /* scores.bmp */; };
+		1275C10217EF5D1600E25BA2 /* winner.bmp in CopyFiles */ = {isa = PBXBuildFile; fileRef = 1275C06317EEC79400E25BA2 /* winner.bmp */; };
+		1275C10617EF5E7400E25BA2 /* SDLMain.m in Sources */ = {isa = PBXBuildFile; fileRef = 1275C10517EF5E7400E25BA2 /* SDLMain.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
-		1275C05A17EEC6FA00E25BA2 /* CopyFiles */ = {
+		1275C0EE17EF5CE400E25BA2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = data;
 			dstSubfolderSpec = 7;
 			files = (
-				1275C05B17EEC72200E25BA2 /* blocks.bmp in CopyFiles */,
-				1275C07017EEC7C400E25BA2 /* levels.bmp in CopyFiles */,
-				1275C08317EEC8EC00E25BA2 /* arial.ttf in CopyFiles */,
+				1275C0EF17EF5CF000E25BA2 /* arial.ttf in CopyFiles */,
+				1275C0F017EF5CF000E25BA2 /* blocks.bmp in CopyFiles */,
+				1275C0F117EF5CF000E25BA2 /* levels.bmp in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		1275C06F17EEC7C000E25BA2 /* CopyFiles */ = {
-			isa = PBXCopyFilesBuildPhase;
-			buildActionMask = 2147483647;
-			dstPath = data/menu;
-			dstSubfolderSpec = 7;
-			files = (
-				1275C07117EEC7D200E25BA2 /* lithtris.bmp in CopyFiles */,
-				1275C07217EEC7D400E25BA2 /* loser.bmp in CopyFiles */,
-				1275C07417EEC7D700E25BA2 /* scores.bmp in CopyFiles */,
-				1275C07517EEC7DA00E25BA2 /* winner.bmp in CopyFiles */,
-				1275C07317EEC7D500E25BA2 /* options.bmp in CopyFiles */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		1275C07617EEC7E500E25BA2 /* CopyFiles */ = {
+		1275C0F217EF5CF600E25BA2 /* CopyFiles */ = {
 			isa = PBXCopyFilesBuildPhase;
 			buildActionMask = 2147483647;
 			dstPath = data/music;
 			dstSubfolderSpec = 7;
 			files = (
-				1275C07717EEC7EC00E25BA2 /* track01.mp3 in CopyFiles */,
-				1275C07917EEC7F900E25BA2 /* track02.mp3 in CopyFiles */,
-				1275C07A17EEC7FC00E25BA2 /* track03.mp3 in CopyFiles */,
-				1275C07B17EEC7FF00E25BA2 /* track04.mp3 in CopyFiles */,
-				1275C07C17EEC80100E25BA2 /* track05.mp3 in CopyFiles */,
-				1275C07D17EEC80400E25BA2 /* track06.mp3 in CopyFiles */,
-				1275C07E17EEC80600E25BA2 /* track07.mp3 in CopyFiles */,
-				1275C07F17EEC80E00E25BA2 /* track08.mp3 in CopyFiles */,
-				1275C08017EEC81100E25BA2 /* track09.mp3 in CopyFiles */,
-				1275C08117EEC81400E25BA2 /* track10.mp3 in CopyFiles */,
+				1275C0F317EF5D0400E25BA2 /* track01.mp3 in CopyFiles */,
+				1275C0F417EF5D0400E25BA2 /* track02.mp3 in CopyFiles */,
+				1275C0F517EF5D0400E25BA2 /* track03.mp3 in CopyFiles */,
+				1275C0F617EF5D0400E25BA2 /* track04.mp3 in CopyFiles */,
+				1275C0F717EF5D0400E25BA2 /* track05.mp3 in CopyFiles */,
+				1275C0F817EF5D0400E25BA2 /* track06.mp3 in CopyFiles */,
+				1275C0F917EF5D0400E25BA2 /* track07.mp3 in CopyFiles */,
+				1275C0FA17EF5D0400E25BA2 /* track08.mp3 in CopyFiles */,
+				1275C0FB17EF5D0400E25BA2 /* track09.mp3 in CopyFiles */,
+				1275C0FC17EF5D0400E25BA2 /* track10.mp3 in CopyFiles */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		1275C0FD17EF5D0A00E25BA2 /* CopyFiles */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = data/menu;
+			dstSubfolderSpec = 7;
+			files = (
+				1275C0FE17EF5D1600E25BA2 /* lithtris.bmp in CopyFiles */,
+				1275C0FF17EF5D1600E25BA2 /* loser.bmp in CopyFiles */,
+				1275C10017EF5D1600E25BA2 /* options.bmp in CopyFiles */,
+				1275C10117EF5D1600E25BA2 /* scores.bmp in CopyFiles */,
+				1275C10217EF5D1600E25BA2 /* winner.bmp in CopyFiles */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		1205597717EE9E69004DE1EA /* lithtris */ = {isa = PBXFileReference; explicitFileType = "compiled.mach-o.executable"; includeInIndex = 0; path = lithtris; sourceTree = BUILT_PRODUCTS_DIR; };
 		1275C02C17EEB77C00E25BA2 /* Block.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Block.h; sourceTree = "<group>"; };
 		1275C02D17EEB77C00E25BA2 /* defines.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = defines.h; sourceTree = "<group>"; };
 		1275C02E17EEB77C00E25BA2 /* enums.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = enums.h; sourceTree = "<group>"; };
@@ -105,8 +106,6 @@
 		1275C03617EEB77C00E25BA2 /* game_states.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = game_states.cpp; sourceTree = "<group>"; };
 		1275C03717EEB77C00E25BA2 /* main.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = main.cpp; sourceTree = "<group>"; };
 		1275C03817EEB77C00E25BA2 /* square.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; path = square.cpp; sourceTree = "<group>"; };
-		1275C04617EEB95400E25BA2 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = "<group>"; };
-		1275C04717EEB95400E25BA2 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = "<group>"; };
 		1275C04917EEB96A00E25BA2 /* CoreFoundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreFoundation.framework; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/System/Library/Frameworks/CoreFoundation.framework; sourceTree = DEVELOPER_DIR; };
 		1275C04B17EEB9CF00E25BA2 /* libobjc.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libobjc.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/lib/libobjc.dylib; sourceTree = DEVELOPER_DIR; };
 		1275C04F17EEB9F200E25BA2 /* libmenu.dylib */ = {isa = PBXFileReference; lastKnownFileType = "compiled.mach-o.dylib"; name = libmenu.dylib; path = Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.7.sdk/usr/lib/libmenu.dylib; sourceTree = DEVELOPER_DIR; };
@@ -128,28 +127,33 @@
 		1275C06D17EEC79A00E25BA2 /* track09.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = track09.mp3; sourceTree = "<group>"; };
 		1275C06E17EEC79A00E25BA2 /* track10.mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = track10.mp3; sourceTree = "<group>"; };
 		1275C08217EEC8E200E25BA2 /* arial.ttf */ = {isa = PBXFileReference; lastKnownFileType = file; name = arial.ttf; path = data/arial.ttf; sourceTree = "<group>"; };
-		1275C08B17EF574200E25BA2 /* Cocoa.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Cocoa.framework; path = System/Library/Frameworks/Cocoa.framework; sourceTree = SDKROOT; };
 		1275C08E17EF574200E25BA2 /* AppKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = AppKit.framework; path = System/Library/Frameworks/AppKit.framework; sourceTree = SDKROOT; };
-		1275C08F17EF574200E25BA2 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		1275C09017EF574200E25BA2 /* Foundation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = Foundation.framework; path = System/Library/Frameworks/Foundation.framework; sourceTree = SDKROOT; };
 		1275C0B517EF594A00E25BA2 /* SDL_mixer.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_mixer.framework; path = lib/SDL_mixer.framework; sourceTree = "<group>"; };
 		1275C0B617EF594A00E25BA2 /* SDL_ttf.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL_ttf.framework; path = lib/SDL_ttf.framework; sourceTree = "<group>"; };
 		1275C0B717EF594A00E25BA2 /* SDL.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = SDL.framework; path = lib/SDL.framework; sourceTree = "<group>"; };
+		1275C0C317EF5C0700E25BA2 /* Lithtris.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Lithtris.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		1275C0CC17EF5C0700E25BA2 /* Lithtris-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Lithtris-Info.plist"; sourceTree = "<group>"; };
+		1275C0CE17EF5C0700E25BA2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.plist.strings; name = en; path = en.lproj/InfoPlist.strings; sourceTree = "<group>"; };
+		1275C0D217EF5C0700E25BA2 /* Lithtris-Prefix.pch */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Lithtris-Prefix.pch"; sourceTree = "<group>"; };
+		1275C0D417EF5C0700E25BA2 /* en */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; name = en; path = en.lproj/Credits.rtf; sourceTree = "<group>"; };
+		1275C10417EF5E7400E25BA2 /* SDLMain.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = SDLMain.h; sourceTree = "<group>"; };
+		1275C10517EF5E7400E25BA2 /* SDLMain.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = SDLMain.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
-		1205597417EE9E69004DE1EA /* Frameworks */ = {
+		1275C0C017EF5C0700E25BA2 /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1275C0BD17EF5A1500E25BA2 /* libmenu.dylib in Frameworks */,
-				1275C04C17EEB9CF00E25BA2 /* libobjc.dylib in Frameworks */,
-				1275C0BE17EF5A2600E25BA2 /* AppKit.framework in Frameworks */,
-				1275C04A17EEB96A00E25BA2 /* CoreFoundation.framework in Frameworks */,
-				1275C0BC17EF5A1200E25BA2 /* Foundation.framework in Frameworks */,
-				1275C0B817EF594A00E25BA2 /* SDL_mixer.framework in Frameworks */,
-				1275C0B917EF594A00E25BA2 /* SDL_ttf.framework in Frameworks */,
-				1275C0BA17EF594A00E25BA2 /* SDL.framework in Frameworks */,
+				1275C0E617EF5CA400E25BA2 /* libmenu.dylib in Frameworks */,
+				1275C0E717EF5CA400E25BA2 /* libobjc.dylib in Frameworks */,
+				1275C0E817EF5CB100E25BA2 /* AppKit.framework in Frameworks */,
+				1275C0E917EF5CB100E25BA2 /* Foundation.framework in Frameworks */,
+				1275C0EA17EF5CB100E25BA2 /* CoreFoundation.framework in Frameworks */,
+				1275C0EB17EF5CB600E25BA2 /* SDL_mixer.framework in Frameworks */,
+				1275C0EC17EF5CB600E25BA2 /* SDL_ttf.framework in Frameworks */,
+				1275C0ED17EF5CB600E25BA2 /* SDL.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -159,13 +163,11 @@
 		1205596A17EE9E3B004DE1EA = {
 			isa = PBXGroup;
 			children = (
+				1275C0CA17EF5C0700E25BA2 /* Lithtris */,
 				1275C08A17EF574200E25BA2 /* Frameworks */,
-				1275C0BB17EF59AC00E25BA2 /* SDL 1.2 */,
 				1205597817EE9E69004DE1EA /* Products */,
 				1275C02B17EEB77C00E25BA2 /* include */,
 				1275C03117EEB77C00E25BA2 /* src */,
-				1275C04617EEB95400E25BA2 /* SDLMain.h */,
-				1275C04717EEB95400E25BA2 /* SDLMain.m */,
 				1275C05C17EEC78100E25BA2 /* data */,
 			);
 			sourceTree = "<group>";
@@ -173,7 +175,7 @@
 		1205597817EE9E69004DE1EA /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				1205597717EE9E69004DE1EA /* lithtris */,
+				1275C0C317EF5C0700E25BA2 /* Lithtris.app */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -250,13 +252,12 @@
 		1275C08A17EF574200E25BA2 /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				1275C0BB17EF59AC00E25BA2 /* SDL 1.2 */,
 				1275C04F17EEB9F200E25BA2 /* libmenu.dylib */,
 				1275C04B17EEB9CF00E25BA2 /* libobjc.dylib */,
 				1275C08E17EF574200E25BA2 /* AppKit.framework */,
-				1275C08F17EF574200E25BA2 /* CoreData.framework */,
 				1275C09017EF574200E25BA2 /* Foundation.framework */,
 				1275C04917EEB96A00E25BA2 /* CoreFoundation.framework */,
-				1275C08B17EF574200E25BA2 /* Cocoa.framework */,
 			);
 			name = Frameworks;
 			sourceTree = "<group>";
@@ -271,27 +272,49 @@
 			name = "SDL 1.2";
 			sourceTree = "<group>";
 		};
+		1275C0CA17EF5C0700E25BA2 /* Lithtris */ = {
+			isa = PBXGroup;
+			children = (
+				1275C10417EF5E7400E25BA2 /* SDLMain.h */,
+				1275C10517EF5E7400E25BA2 /* SDLMain.m */,
+				1275C0CB17EF5C0700E25BA2 /* Supporting Files */,
+			);
+			path = Lithtris;
+			sourceTree = "<group>";
+		};
+		1275C0CB17EF5C0700E25BA2 /* Supporting Files */ = {
+			isa = PBXGroup;
+			children = (
+				1275C0CC17EF5C0700E25BA2 /* Lithtris-Info.plist */,
+				1275C0CD17EF5C0700E25BA2 /* InfoPlist.strings */,
+				1275C0D217EF5C0700E25BA2 /* Lithtris-Prefix.pch */,
+				1275C0D317EF5C0700E25BA2 /* Credits.rtf */,
+			);
+			name = "Supporting Files";
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		1205597617EE9E69004DE1EA /* lithtris */ = {
+		1275C0C217EF5C0700E25BA2 /* Lithtris */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 1205597F17EE9E69004DE1EA /* Build configuration list for PBXNativeTarget "lithtris" */;
+			buildConfigurationList = 1275C0DC17EF5C0800E25BA2 /* Build configuration list for PBXNativeTarget "Lithtris" */;
 			buildPhases = (
-				1205597317EE9E69004DE1EA /* Sources */,
-				1205597417EE9E69004DE1EA /* Frameworks */,
-				1275C05A17EEC6FA00E25BA2 /* CopyFiles */,
-				1275C06F17EEC7C000E25BA2 /* CopyFiles */,
-				1275C07617EEC7E500E25BA2 /* CopyFiles */,
+				1275C0BF17EF5C0700E25BA2 /* Sources */,
+				1275C0C017EF5C0700E25BA2 /* Frameworks */,
+				1275C0C117EF5C0700E25BA2 /* Resources */,
+				1275C0EE17EF5CE400E25BA2 /* CopyFiles */,
+				1275C0F217EF5CF600E25BA2 /* CopyFiles */,
+				1275C0FD17EF5D0A00E25BA2 /* CopyFiles */,
 			);
 			buildRules = (
 			);
 			dependencies = (
 			);
-			name = lithtris;
-			productName = lithtris;
-			productReference = 1205597717EE9E69004DE1EA /* lithtris */;
-			productType = "com.apple.product-type.tool";
+			name = Lithtris;
+			productName = Lithtris;
+			productReference = 1275C0C317EF5C0700E25BA2 /* Lithtris.app */;
+			productType = "com.apple.product-type.application";
 		};
 /* End PBXNativeTarget section */
 
@@ -313,28 +336,59 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				1205597617EE9E69004DE1EA /* lithtris */,
+				1275C0C217EF5C0700E25BA2 /* Lithtris */,
 			);
 		};
 /* End PBXProject section */
 
+/* Begin PBXResourcesBuildPhase section */
+		1275C0C117EF5C0700E25BA2 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				1275C0CF17EF5C0700E25BA2 /* InfoPlist.strings in Resources */,
+				1275C0D517EF5C0700E25BA2 /* Credits.rtf in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
-		1205597317EE9E69004DE1EA /* Sources */ = {
+		1275C0BF17EF5C0700E25BA2 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				1275C03917EEB77C00E25BA2 /* block.cpp in Sources */,
-				1275C03A17EEB77C00E25BA2 /* game.cpp in Sources */,
-				1275C03B17EEB77C00E25BA2 /* game_collisions.cpp in Sources */,
-				1275C03C17EEB77C00E25BA2 /* game_inputs.cpp in Sources */,
-				1275C03D17EEB77C00E25BA2 /* game_states.cpp in Sources */,
-				1275C03E17EEB77C00E25BA2 /* main.cpp in Sources */,
-				1275C03F17EEB77C00E25BA2 /* square.cpp in Sources */,
-				1275C04817EEB95400E25BA2 /* SDLMain.m in Sources */,
+				1275C0DF17EF5C9100E25BA2 /* block.cpp in Sources */,
+				1275C0E017EF5C9100E25BA2 /* game.cpp in Sources */,
+				1275C0E117EF5C9100E25BA2 /* game_collisions.cpp in Sources */,
+				1275C0E217EF5C9100E25BA2 /* game_inputs.cpp in Sources */,
+				1275C0E317EF5C9100E25BA2 /* game_states.cpp in Sources */,
+				1275C0E417EF5C9100E25BA2 /* main.cpp in Sources */,
+				1275C0E517EF5C9100E25BA2 /* square.cpp in Sources */,
+				1275C10617EF5E7400E25BA2 /* SDLMain.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXSourcesBuildPhase section */
+
+/* Begin PBXVariantGroup section */
+		1275C0CD17EF5C0700E25BA2 /* InfoPlist.strings */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1275C0CE17EF5C0700E25BA2 /* en */,
+			);
+			name = InfoPlist.strings;
+			sourceTree = "<group>";
+		};
+		1275C0D317EF5C0700E25BA2 /* Credits.rtf */ = {
+			isa = PBXVariantGroup;
+			children = (
+				1275C0D417EF5C0700E25BA2 /* en */,
+			);
+			name = Credits.rtf;
+			sourceTree = "<group>";
+		};
+/* End PBXVariantGroup section */
 
 /* Begin XCBuildConfiguration section */
 		1205597117EE9E3B004DE1EA /* Debug */ = {
@@ -351,7 +405,7 @@
 			};
 			name = Release;
 		};
-		1205598017EE9E69004DE1EA /* Debug */ = {
+		1275C0DD17EF5C0800E25BA2 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -359,14 +413,14 @@
 				COPY_PHASE_STRIP = NO;
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_DYNAMIC_NO_PIC = NO;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
 				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Lithtris/Lithtris-Prefix.pch";
 				GCC_PREPROCESSOR_DEFINITIONS = (
 					"DEBUG=1",
 					"$(inherited)",
@@ -382,14 +436,15 @@
 					$SRCROOT/lib/SDL_mixer.framework/Headers,
 					$SRCROOT/lib/SDL_ttf.framework/Headers,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				INFOPLIST_FILE = "Lithtris/Lithtris-Info.plist";
 				ONLY_ACTIVE_ARCH = YES;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Debug;
 		};
-		1205598117EE9E69004DE1EA /* Release */ = {
+		1275C0DE17EF5C0800E25BA2 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
@@ -398,12 +453,12 @@
 				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
 				FRAMEWORK_SEARCH_PATHS = (
 					"$(inherited)",
-					"\"$(SRCROOT)/..\"",
-					"\"$(SRCROOT)\"",
 					"\"$(SRCROOT)/lib\"",
 				);
 				GCC_C_LANGUAGE_STANDARD = gnu99;
 				GCC_ENABLE_OBJC_EXCEPTIONS = YES;
+				GCC_PRECOMPILE_PREFIX_HEADER = YES;
+				GCC_PREFIX_HEADER = "Lithtris/Lithtris-Prefix.pch";
 				GCC_VERSION = com.apple.compilers.llvm.clang.1_0;
 				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
 				GCC_WARN_ABOUT_RETURN_TYPE = YES;
@@ -414,9 +469,10 @@
 					$SRCROOT/lib/SDL_mixer.framework/Headers,
 					$SRCROOT/lib/SDL_ttf.framework/Headers,
 				);
-				MACOSX_DEPLOYMENT_TARGET = 10.7;
+				INFOPLIST_FILE = "Lithtris/Lithtris-Info.plist";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SDKROOT = macosx;
+				WRAPPER_EXTENSION = app;
 			};
 			name = Release;
 		};
@@ -432,14 +488,13 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		1205597F17EE9E69004DE1EA /* Build configuration list for PBXNativeTarget "lithtris" */ = {
+		1275C0DC17EF5C0800E25BA2 /* Build configuration list for PBXNativeTarget "Lithtris" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
-				1205598017EE9E69004DE1EA /* Debug */,
-				1205598117EE9E69004DE1EA /* Release */,
+				1275C0DD17EF5C0800E25BA2 /* Debug */,
+				1275C0DE17EF5C0800E25BA2 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};
