@@ -3,7 +3,7 @@ lithtris
 
 A mostly complete Tetris game in SDL/C++.
 
-Shouts out for the music and art and Zappa and Dali.
+Shouts out for the music to Zappa and Dali for some of the art.
 
 This repo was imported from a dusty old svn repo apparently from a time when I didnt feel that commit messages were very important...
 
