@@ -8,5 +8,7 @@ Shouts out for the music and art and Zappa and Dali.
 This repo was imported from a dusty old svn repo apparently from a time when I didnt feel that commit messages were very important...
 
 
+Mac OS X 10.7+: [Download DMG](http://lithium.github.io/lithtris/dist/Lithtris-0.8.1.dmg)
 
+![screenshot](http://lithium.github.io/lithtris/screenshots/lithtris-screenshot1.png)
 
