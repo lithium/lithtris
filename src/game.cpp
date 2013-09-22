@@ -6,6 +6,7 @@
 #include <sstream>
 #include <fstream>
 #include <iostream>
+#include <sys/stat.h>
 
 namespace lithtris
 {
